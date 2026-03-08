@@ -1,5 +1,6 @@
 package revi1337.onsquad.infrastructure.aws.s3.cleanup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -19,14 +20,14 @@ import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
 public class S3ImageCleanupProcessor {
 
     public static final int MAX_RETRY_COUNT = 5;
-    private static final int BATCH_SIZE = 1000;
+    public static final int BATCH_SIZE = 1000;
 
     private final Executor s3DeletionExecutor;
     private final ImageRecycleBinRepository imageRecyclebinRepository;
     private final S3StorageCleaner s3StorageCleaner;
 
-    public FilePaths findAllTargets() {
-        List<FilePath> targets = imageRecyclebinRepository.findAll().stream()
+    public FilePaths findTargets(long lastId, LocalDateTime cutOff, int batchSize) {
+        List<FilePath> targets = imageRecyclebinRepository.findByCursor(lastId, cutOff, batchSize).stream()
                 .map(this::convert)
                 .toList();
 
@@ -48,8 +49,8 @@ public class S3ImageCleanupProcessor {
     public FilePaths updateRetryCountAndGetExceeded(FilePaths failedPaths) {
         imageRecyclebinRepository.incrementRetryCount(failedPaths.getFileIds());
 
-        List<FilePath> exceedPaths = imageRecyclebinRepository.findByRetryCountLargerThan(MAX_RETRY_COUNT).stream()
-                .map(this::convert)
+        List<FilePath> exceedPaths = failedPaths.stream()
+                .filter(failedPath -> failedPath.getRetryCount() + 1 >= MAX_RETRY_COUNT)
                 .toList();
 
         return new FilePaths(exceedPaths);
@@ -68,7 +69,7 @@ public class S3ImageCleanupProcessor {
     }
 
     private FilePath convert(DeletedImage deletedImage) {
-        return new FilePath(deletedImage.getId(), deletedImage.getPath(), deletedImage.getRetryCount());
+        return new FilePath(deletedImage.getId(), deletedImage.getPath(), deletedImage.getRetryCount(), deletedImage.getDeletedAt());
     }
 
     public record CleanupResult(FilePaths success, FilePaths failure) {

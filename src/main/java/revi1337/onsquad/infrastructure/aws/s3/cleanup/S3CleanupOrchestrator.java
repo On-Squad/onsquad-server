@@ -1,5 +1,6 @@
 package revi1337.onsquad.infrastructure.aws.s3.cleanup;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,19 +13,26 @@ import revi1337.onsquad.infrastructure.aws.s3.notification.S3FailNotificationPro
 @RequiredArgsConstructor
 public class S3CleanupOrchestrator {
 
+    private static final int BATCH_FETCH_SIZE = 5000;
+
     private final S3ImageCleanupProcessor cleanupProcessor;
     private final S3FailNotificationProvider notificationProvider;
 
-    public void execute() {
-        FilePaths targets = cleanupProcessor.findAllTargets();
-        if (targets.isEmpty()) {
-            return;
-        }
+    public void execute(LocalDateTime startAt) {
+        long lastId = 0L;
+        log.info("Starting S3 Cleanup Task - CutOff: {}", startAt);
 
-        log.debug("Starting S3 Cleanup - Total: {}", targets.size());
-        CleanupResult result = cleanupProcessor.executeS3Deletion(targets);
-        handleSuccess(result.success());
-        handleFailure(result.failure());
+        while (true) {
+            FilePaths targets = cleanupProcessor.findTargets(lastId, startAt, BATCH_FETCH_SIZE);
+            if (targets.isEmpty()) {
+                break;
+            }
+            log.debug("Processing S3 Cleanup Batch - LastID: {}, Size: {}", lastId, targets.size());
+            CleanupResult result = cleanupProcessor.executeS3Deletion(targets);
+            handleSuccess(result.success());
+            handleFailure(result.failure());
+            lastId = targets.getLastFileId();
+        }
     }
 
     private void handleSuccess(FilePaths success) {

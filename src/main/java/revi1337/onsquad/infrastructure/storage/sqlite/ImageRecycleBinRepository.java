@@ -1,5 +1,6 @@
 package revi1337.onsquad.infrastructure.storage.sqlite;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,38 +18,56 @@ public class ImageRecycleBinRepository {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public void insert(String path) {
-        String sql = "INSERT INTO image_recycle_bin (path) VALUES (:path)";
+    public void insert(DeletedImage deletedImage) {
+        String sql = "INSERT INTO image_recycle_bin (path, retry_count, deleted_at) VALUES (:path, :retryCount, :deletedAt)";
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("path", path);
+                .addValue("path", deletedImage.getPath())
+                .addValue("retryCount", deletedImage.getRetryCount())
+                .addValue("deletedAt", deletedImage.getDeletedAt());
 
         jdbcTemplate.update(sql, sqlParameterSource);
     }
 
-    public void insertBatch(List<String> paths) {
-        String sql = "INSERT INTO image_recycle_bin (path) VALUES (:path)";
-        SqlParameterSource[] batchArgs = paths.stream()
-                .map(path -> new MapSqlParameterSource("path", path))
+    public void insertBatch(List<DeletedImage> deletedImages) {
+        String sql = "INSERT INTO image_recycle_bin (path, retry_count, deleted_at) VALUES (:path, :retryCount, :deletedAt)";
+        SqlParameterSource[] batchArgs = deletedImages.stream()
+                .map(deletedImage -> new MapSqlParameterSource()
+                        .addValue("path", deletedImage.getPath())
+                        .addValue("retryCount", deletedImage.getRetryCount())
+                        .addValue("deletedAt", deletedImage.getDeletedAt()))
                 .toArray(SqlParameterSource[]::new);
 
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 
-    public List<DeletedImage> findAll() {
-        String sql = "SELECT id, path, retry_count FROM image_recycle_bin";
+    public List<DeletedImage> findByCursor(long lastId, LocalDateTime cutOff, int batchSize) {
+        String sql = """
+                SELECT id, path, retry_count, deleted_at \
+                FROM image_recycle_bin \
+                WHERE id > :lastId AND deleted_at <= :cutOff \
+                ORDER BY id ASC \
+                LIMIT :batchSize
+                """;
+
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("lastId", lastId)
+                .addValue("cutOff", cutOff)
+                .addValue("batchSize", batchSize);
 
         return jdbcTemplate.query(
                 sql,
+                sqlParameterSource,
                 (rs, rowNum) -> new DeletedImage(
                         rs.getLong("id"),
                         rs.getString("path"),
-                        rs.getInt("retry_count")
+                        rs.getInt("retry_count"),
+                        rs.getObject("deleted_at", LocalDateTime.class)
                 )
         );
     }
 
     public List<DeletedImage> findByRetryCountLargerThan(int retryCount) {
-        String sql = "SELECT id, path, retry_count FROM image_recycle_bin WHERE retry_count >= (:retryCount)";
+        String sql = "SELECT id, path, retry_count, deleted_at FROM image_recycle_bin WHERE retry_count >= (:retryCount)";
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource("retryCount", retryCount);
 
         return jdbcTemplate.query(
@@ -57,7 +76,8 @@ public class ImageRecycleBinRepository {
                 (rs, rowNum) -> new DeletedImage(
                         rs.getLong("id"),
                         rs.getString("path"),
-                        rs.getInt("retry_count")
+                        rs.getInt("retry_count"),
+                        rs.getObject("deleted_at", LocalDateTime.class)
                 )
         );
     }

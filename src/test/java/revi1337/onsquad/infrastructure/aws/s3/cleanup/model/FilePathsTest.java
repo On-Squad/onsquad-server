@@ -1,7 +1,9 @@
 package revi1337.onsquad.infrastructure.aws.s3.cleanup.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,9 +59,10 @@ class FilePathsTest {
     @Test
     @DisplayName("ID 리스트와 경로(String) 리스트를 정확히 추출한다")
     void extractValues() {
+        LocalDateTime deletedAt = LocalDateTime.now();
         List<FilePath> rawList = List.of(
-                new FilePath(10L, "a.jpg", 0),
-                new FilePath(20L, "b.jpg", 0)
+                new FilePath(10L, "a.jpg", 0, deletedAt),
+                new FilePath(20L, "b.jpg", 0, deletedAt)
         );
         FilePaths targets = new FilePaths(rawList);
 
@@ -69,9 +72,40 @@ class FilePathsTest {
         });
     }
 
+    @Test
+    @DisplayName("리스트의 마지막 파일 ID를 정확히 가져온다")
+    void getLastFileId() {
+        FilePaths targets = new FilePaths(createSampleFiles(5));
+
+        long lastId = targets.getLastFileId();
+
+        assertThat(lastId).isEqualTo(5L);
+    }
+
+    @Test
+    @DisplayName("파일 리스트가 비어있을 경우 마지막 ID는 0을 반환한다")
+    void getLastFileId_Empty() {
+        FilePaths emptyFiles = new FilePaths(List.of());
+
+        long lastId = emptyFiles.getLastFileId();
+
+        assertThat(lastId).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("파일이 하나만 있을 경우 그 파일의 ID를 반환한다")
+    void getLastFileIdSingle() {
+        FilePaths singleFile = new FilePaths(createSampleFiles(1));
+
+        long lastId = singleFile.getLastFileId();
+
+        assertThat(lastId).isEqualTo(1L);
+    }
+
     private List<FilePath> createSampleFiles(int count) {
+        LocalDateTime deletedAt = LocalDateTime.now();
         return IntStream.rangeClosed(1, count)
-                .mapToObj(i -> new FilePath((long) i, "path/file-" + i + ".png", 0))
+                .mapToObj(i -> new FilePath((long) i, "path/file-" + i + ".png", 0, deletedAt))
                 .collect(Collectors.toList());
     }
 }

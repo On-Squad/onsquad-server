@@ -1,6 +1,8 @@
 package revi1337.onsquad.infrastructure.aws.s3.cleanup;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ public class S3BatchDeletionScheduler {
 
     @Scheduled(cron = "${onsquad.aws.s3.delete-batch-cron}")
     public void deleteInBatch() {
-        redisLockExecutor.executeIfAcquired(LOCK_KEY, Duration.ofMinutes(3), s3CleanupOrchestrator::execute);
+        LocalDateTime startAt = LocalDate.now().atStartOfDay();
+        redisLockExecutor.executeIfAcquired(LOCK_KEY, Duration.ofMinutes(3), () -> s3CleanupOrchestrator.execute(startAt));
     }
 }

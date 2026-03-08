@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class FilePaths {
 
@@ -56,7 +57,19 @@ public class FilePaths {
                 .toList();
     }
 
+    public long getLastFileId() {
+        if (filePaths.isEmpty()) {
+            return 0L;
+        }
+
+        return filePaths.get(filePaths.size() - 1).getId();
+    }
+
     public List<FilePath> values() {
         return filePaths;
+    }
+
+    public Stream<FilePath> stream() {
+        return filePaths.stream();
     }
 }

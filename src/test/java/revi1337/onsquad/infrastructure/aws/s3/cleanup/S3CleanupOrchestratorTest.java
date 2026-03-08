@@ -1,10 +1,15 @@
 package revi1337.onsquad.infrastructure.aws.s3.cleanup;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +22,6 @@ import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FilePaths;
 import revi1337.onsquad.infrastructure.aws.s3.notification.S3FailNotificationProvider;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("S3 이미지 정리 오케스트레이터 테스트")
 class S3CleanupOrchestratorTest {
 
     @Mock
@@ -33,27 +37,40 @@ class S3CleanupOrchestratorTest {
     @DisplayName("재시도 임계치를 초과한 실패 건에 대해서만 알림을 발송하고 DB에서 제거한다")
     void execute_withExceedingFailures() {
         // given
-        FilePaths allTargets = mock(FilePaths.class);
+        LocalDateTime startAt = LocalDateTime.now();
+        FilePaths firstTargets = mock(FilePaths.class);
+        FilePaths emptyTargets = mock(FilePaths.class);
         FilePaths success = mock(FilePaths.class);
         FilePaths failure = mock(FilePaths.class);
         FilePaths exceedPaths = mock(FilePaths.class);
 
-        given(allTargets.isEmpty()).willReturn(false);
-        given(cleanupProcessor.findAllTargets()).willReturn(allTargets);
-        given(cleanupProcessor.executeS3Deletion(allTargets)).willReturn(new CleanupResult(success, failure));
+        given(firstTargets.isEmpty()).willReturn(false);
+        given(firstTargets.size()).willReturn(10);
+        given(firstTargets.getLastFileId()).willReturn(100L);
+        given(emptyTargets.isEmpty()).willReturn(true);
+
+        given(cleanupProcessor.findTargets(anyLong(), eq(startAt), anyInt()))
+                .willReturn(firstTargets)
+                .willReturn(emptyTargets);
+
+        given(cleanupProcessor.executeS3Deletion(firstTargets))
+                .willReturn(new CleanupResult(success, failure));
 
         given(success.isNotEmpty()).willReturn(true);
         given(failure.isNotEmpty()).willReturn(true);
         given(cleanupProcessor.updateRetryCountAndGetExceeded(failure)).willReturn(exceedPaths);
+
         given(exceedPaths.isEmpty()).willReturn(false);
         given(exceedPaths.pathValues()).willReturn(List.of("fail-path"));
 
         // when
-        orchestrator.execute();
+        orchestrator.execute(startAt);
 
         // then
         verify(cleanupProcessor).deleteFromRecycleBin(success);
+        verify(cleanupProcessor).updateRetryCountAndGetExceeded(failure);
         verify(notificationProvider).sendExceedRetryAlert(anyList());
         verify(cleanupProcessor).deleteFromRecycleBin(exceedPaths);
+        verify(cleanupProcessor, times(2)).findTargets(anyLong(), eq(startAt), anyInt());
     }
 }

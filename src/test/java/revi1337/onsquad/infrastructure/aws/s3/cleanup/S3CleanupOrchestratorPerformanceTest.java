@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.lang.management.ManagementFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -41,6 +42,7 @@ import revi1337.onsquad.infrastructure.aws.s3.client.S3StorageCleaner;
 import revi1337.onsquad.infrastructure.aws.s3.config.S3BucketProperties;
 import revi1337.onsquad.infrastructure.aws.s3.config.S3ThreadPoolConfig;
 import revi1337.onsquad.infrastructure.aws.s3.notification.S3FailNotificationProvider;
+import revi1337.onsquad.infrastructure.storage.sqlite.DeletedImage;
 import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -63,20 +65,21 @@ class S3CleanupOrchestratorPerformanceTest {
             CREATE TABLE IF NOT EXISTS image_recycle_bin (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 path TEXT NOT NULL,
-                retry_count INTEGER NOT NULL DEFAULT 0
+                retry_count INTEGER NOT NULL DEFAULT 0,
+                deleted_at DATETIME NOT NULL
             )
             """;
 
     private static final String DROP_RECYCLE_BIN_TABLE_SQL = "DROP TABLE IF EXISTS image_recycle_bin";
 
     private static final String INSERT_MOCK_DATA_SQL = """
-            INSERT INTO image_recycle_bin (path, retry_count)
+            INSERT INTO image_recycle_bin (path, retry_count, deleted_at)
             WITH RECURSIVE cnt(n) AS (
                 SELECT 1
                 UNION ALL
                 SELECT n + 1 FROM cnt WHERE n < 100000
             )
-            SELECT 'member/file-' || n || '.txt', 0 FROM cnt;
+            SELECT 'member/file-' || n || '.txt', 0, datetime('now', 'localtime') FROM cnt;
             """;
 
     private static final String[] S3_MOCK_SETUP_COMMAND = {
@@ -126,8 +129,8 @@ class S3CleanupOrchestratorPerformanceTest {
 
     @Test
     @DisplayName("""
-            [Sync] Speed: 6688ms, Max Mem Peak: 111MB
-            [Async] Speed: 1549ms, Max Mem Peak: 121MB
+            [Async + Before Mem Optimize] Speed: 1549ms, Max Mem Peak: 121MB
+            [Async + After Mem Optimize] Speed: 7416ms, Max Mem Peak: 102
             """)
     void execute100000() {
         // given
@@ -138,7 +141,7 @@ class S3CleanupOrchestratorPerformanceTest {
         memoryMonitor.start();
 
         // when
-        stopWatch(TimeUnit.MILLISECONDS, s3CleanupOrchestrator::execute);
+        stopWatch(TimeUnit.MILLISECONDS, () -> s3CleanupOrchestrator.execute(LocalDateTime.now()));
 
         // then
         memoryMonitor.stop();
@@ -149,8 +152,8 @@ class S3CleanupOrchestratorPerformanceTest {
         });
     }
 
-    private void insertBatchToRecycleBin(List<String> paths) {
-        imageRecyclebinRepository.insertBatch(paths);
+    private void insertBatchToRecycleBin(List<DeletedImage> deletedImages) {
+        imageRecyclebinRepository.insertBatch(deletedImages);
     }
 
     private void uploadFileParallel(List<String> paths) {
