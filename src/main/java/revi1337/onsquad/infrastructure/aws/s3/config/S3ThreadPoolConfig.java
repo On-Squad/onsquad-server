@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import revi1337.onsquad.infrastructure.aws.s3.client.S3StorageCleaner;
 import revi1337.onsquad.infrastructure.aws.s3.event.FileDeleteEventListener;
 
 @Configuration
@@ -27,14 +26,14 @@ public class S3ThreadPoolConfig {
     }
 
     /**
-     * Worker Thread Used For {@link S3StorageCleaner}
+     * Worker Thread Used For {@link revi1337.onsquad.infrastructure.aws.s3.cleanup.S3ImageCleanupProcessor}
      */
     @Bean(name = "s3DeletionExecutor")
     public Executor s3DeletionExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(0);
+        executor.setQueueCapacity(50);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("s3-cleaner-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
