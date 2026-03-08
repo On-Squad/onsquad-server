@@ -8,6 +8,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
 public class AwsTestContainerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -26,8 +27,8 @@ public class AwsTestContainerInitializer implements ApplicationContextInitialize
             .withEnv("DEBUG", "1")
             .withEnv("SSL_DISABLE", "1")
             .withServices(LocalStackContainer.Service.S3)
-            .withReuse(true);
-//            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers.aws")));
+            .withReuse(true)
+            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers.aws")));
 
     private static final String[] BUCKET_CREATE_COMMAND =
             {"awslocal", "s3api", "create-bucket", "--bucket", "onsquad-bucket", "--create-bucket-configuration", "LocationConstraint=" + DEFAULT_REGION};
