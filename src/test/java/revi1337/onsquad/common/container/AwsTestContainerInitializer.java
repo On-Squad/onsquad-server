@@ -8,7 +8,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
 public class AwsTestContainerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -19,7 +18,6 @@ public class AwsTestContainerInitializer implements ApplicationContextInitialize
     private static final String DEFAULT_REGION = "ap-northeast-2";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsTestContainerInitializer.class);
-    //    private static final LocalStackContainer AWS = new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.14.3"))
     private static final LocalStackContainer AWS = new LocalStackContainer(DockerImageName.parse("localstack/localstack:3.4.0"))
             .withExposedPorts(LOCALSTACK_GATEWAY_PORT)
             .withEnv("AWS_ACCESS_KEY_ID", DEFAULT_ACCESS_KEY)
@@ -28,8 +26,8 @@ public class AwsTestContainerInitializer implements ApplicationContextInitialize
             .withEnv("DEBUG", "1")
             .withEnv("SSL_DISABLE", "1")
             .withServices(LocalStackContainer.Service.S3)
-            .withReuse(true)
-            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers.aws")));
+            .withReuse(true);
+//            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers.aws")));
 
     private static final String[] BUCKET_CREATE_COMMAND =
             {"awslocal", "s3api", "create-bucket", "--bucket", "onsquad-bucket", "--create-bucket-configuration", "LocationConstraint=" + DEFAULT_REGION};
@@ -51,6 +49,14 @@ public class AwsTestContainerInitializer implements ApplicationContextInitialize
             AWS.execInContainer(FLUSH_ALL_COMMAND);
         } catch (Exception e) {
             LOGGER.error("Failed to flush all", e);
+        }
+    }
+
+    public static void execute(String[] command) {
+        try {
+            AWS.execInContainer(command);
+        } catch (Exception e) {
+            LOGGER.error("Failed to execute command", e);
         }
     }
 
