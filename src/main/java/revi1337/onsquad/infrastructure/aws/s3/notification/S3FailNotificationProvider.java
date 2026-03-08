@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.config.system.properties.OnsquadProperties;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.S3ImageCleanupProcessor;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.S3CleanupProcessor;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage.Embed;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage.Embed.Footer;
@@ -49,7 +49,7 @@ public class S3FailNotificationProvider {
                 **Manual deletion is required.** Please refer to the attached JSON file for the specific file paths.
                 
                 **S3 Batch Cleanup: Exceed Report:** `{1} Objects Exceeded`
-                """, S3ImageCleanupProcessor.MAX_RETRY_COUNT, paths.size()).translateEscapes();
+                """, S3CleanupProcessor.MAX_RETRY_COUNT, paths.size()).translateEscapes();
 
         return DiscordMessage.builder()
                 .username(NOTIFICATION_PROVIDER_NAME)
@@ -65,7 +65,7 @@ public class S3FailNotificationProvider {
         String description = MessageFormat.format("""
                 Files scheduled for deletion are processed in a daily midnight batch.
                 Any object that fails the deletion process **{0} consecutive times** is classified as 'Exceed' and excluded from the automated system.
-                """, S3ImageCleanupProcessor.MAX_RETRY_COUNT).translateEscapes();
+                """, S3CleanupProcessor.MAX_RETRY_COUNT).translateEscapes();
 
         return List.of(Embed.builder()
                 .color(Embed.COLOR_RED)

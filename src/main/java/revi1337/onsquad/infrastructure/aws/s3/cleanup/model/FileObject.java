@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class FilePath {
+public class FileObject {
 
     private Long id;
     private String path;
     private int retryCount;
     private LocalDateTime deletedAt;
 
-    public FilePath(Long id, String path, int retryCount, LocalDateTime deletedAt) {
+    public FileObject(Long id, String path, int retryCount, LocalDateTime deletedAt) {
         this.id = id;
         this.path = path;
         this.retryCount = retryCount;

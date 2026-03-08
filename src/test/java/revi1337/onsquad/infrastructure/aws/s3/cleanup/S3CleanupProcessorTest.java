@@ -29,12 +29,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import revi1337.onsquad.common.config.etc.YamlPropertySourceFactory;
 import revi1337.onsquad.common.config.infrastructure.AwsConfiguration;
 import revi1337.onsquad.common.container.AwsTestContainerInitializer;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FilePaths;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FileObjects;
 import revi1337.onsquad.infrastructure.aws.s3.client.S3StorageCleaner;
 import revi1337.onsquad.infrastructure.aws.s3.config.S3BucketProperties;
 import revi1337.onsquad.infrastructure.aws.s3.config.S3ThreadPoolConfig;
-import revi1337.onsquad.infrastructure.storage.sqlite.DeletedImage;
-import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
+import revi1337.onsquad.infrastructure.storage.sqlite.DeletedFile;
+import revi1337.onsquad.infrastructure.storage.sqlite.FileRecycleBinRepository;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -43,19 +43,19 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @EnableConfigurationProperties(S3BucketProperties.class)
 @ContextConfiguration(
         initializers = AwsTestContainerInitializer.class,
-        classes = {AwsConfiguration.S3Configuration.class, S3ThreadPoolConfig.class, S3ImageCleanupProcessorTest.SqliteDataSourcePropertiesConfig.class}
+        classes = {AwsConfiguration.S3Configuration.class, S3ThreadPoolConfig.class, S3CleanupProcessorTest.SqliteDataSourcePropertiesConfig.class}
 )
 @ExtendWith(SpringExtension.class)
-class S3ImageCleanupProcessorTest {
+class S3CleanupProcessorTest {
 
     private final DataSource dataSource;
     private final S3Client s3Client;
     private final S3BucketProperties s3BucketProperties;
-    private final ImageRecycleBinRepository imageRecyclebinRepository;
-    private final S3ImageCleanupProcessor s3ImageCleanupProcessor;
+    private final FileRecycleBinRepository fileRecyclebinRepository;
+    private final S3CleanupProcessor s3CleanupProcessor;
 
     @Autowired
-    public S3ImageCleanupProcessorTest(
+    public S3CleanupProcessorTest(
             @Qualifier("s3DeletionExecutor") Executor s3DeletionExecutor,
             @Qualifier("sqliteDataSource") DataSource dataSource,
             S3Client s3Client,
@@ -64,10 +64,10 @@ class S3ImageCleanupProcessorTest {
         this.dataSource = dataSource;
         this.s3Client = s3Client;
         this.s3BucketProperties = s3BucketProperties;
-        this.imageRecyclebinRepository = new ImageRecycleBinRepository(dataSource);
-        this.s3ImageCleanupProcessor = new S3ImageCleanupProcessor(
+        this.fileRecyclebinRepository = new FileRecycleBinRepository(dataSource);
+        this.s3CleanupProcessor = new S3CleanupProcessor(
                 s3DeletionExecutor,
-                this.imageRecyclebinRepository,
+                this.fileRecyclebinRepository,
                 new S3StorageCleaner(this.s3Client, s3BucketProperties.bucket())
         );
     }
@@ -76,9 +76,9 @@ class S3ImageCleanupProcessorTest {
     void setUp() {
         AwsTestContainerInitializer.flushAll();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.execute("DROP TABLE IF EXISTS image_recycle_bin");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS file_recycle_bin");
         jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS image_recycle_bin (
+                CREATE TABLE IF NOT EXISTS file_recycle_bin (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     path TEXT NOT NULL,
                     retry_count INTEGER NOT NULL DEFAULT 0,
@@ -97,7 +97,7 @@ class S3ImageCleanupProcessorTest {
         int limit = 3;
         LocalDateTime cutOff = now.plusMinutes(1);
 
-        FilePaths result = s3ImageCleanupProcessor.findTargets(lastId, cutOff, limit);
+        FileObjects result = s3CleanupProcessor.findTargets(lastId, cutOff, limit);
 
         assertSoftly(softly -> {
             softly.assertThat(result.size()).isEqualTo(3);
@@ -114,9 +114,9 @@ class S3ImageCleanupProcessorTest {
         insertMockData(paths, 0, now.minusDays(1));
         uploadMockFile(paths);
         LocalDateTime cutOff = now.plusMinutes(1);
-        FilePaths targets = s3ImageCleanupProcessor.findTargets(0L, cutOff, 100);
+        FileObjects targets = s3CleanupProcessor.findTargets(0L, cutOff, 100);
 
-        S3ImageCleanupProcessor.CleanupResult result = s3ImageCleanupProcessor.executeS3Deletion(targets);
+        S3CleanupProcessor.CleanupResult result = s3CleanupProcessor.executeS3Deletion(targets);
 
         assertSoftly(softly -> {
             softly.assertThat(result.success().size()).isEqualTo(5);
@@ -134,15 +134,15 @@ class S3ImageCleanupProcessorTest {
         insertMockData(failPaths, 4, now.minusDays(1));
         insertMockData(normalPaths, 0, now.minusDays(1));
         LocalDateTime cutOff = now.plusMinutes(1);
-        FilePaths allTargets = s3ImageCleanupProcessor.findTargets(0L, cutOff, 100);
+        FileObjects allTargets = s3CleanupProcessor.findTargets(0L, cutOff, 100);
 
-        FilePaths exceeded = s3ImageCleanupProcessor.updateRetryCountAndGetExceeded(allTargets);
+        FileObjects exceeded = s3CleanupProcessor.updateRetryCountAndGetExceeded(allTargets);
 
         assertSoftly(softly -> {
             softly.assertThat(exceeded.size()).isEqualTo(2);
             softly.assertThat(exceeded.pathValues()).containsExactlyInAnyOrderElementsOf(failPaths);
 
-            FilePaths updated = s3ImageCleanupProcessor.findTargets(0L, cutOff, 100);
+            FileObjects updated = s3CleanupProcessor.findTargets(0L, cutOff, 100);
             softly.assertThat(updated.filterByPaths(failPaths).stream().allMatch(f -> f.getRetryCount() == 5)).isTrue();
             softly.assertThat(updated.filterByPaths(normalPaths).stream().allMatch(f -> f.getRetryCount() == 1)).isTrue();
         });
@@ -155,19 +155,19 @@ class S3ImageCleanupProcessorTest {
         List<String> paths = List.of("del-1.txt", "del-2.txt", "del-3.txt");
         insertMockData(paths, 0, now.minusDays(1));
         LocalDateTime cutOff = now.plusMinutes(1);
-        FilePaths targets = s3ImageCleanupProcessor.findTargets(0L, cutOff, 10);
+        FileObjects targets = s3CleanupProcessor.findTargets(0L, cutOff, 10);
 
-        s3ImageCleanupProcessor.deleteFromRecycleBin(targets);
+        s3CleanupProcessor.deleteFromRecycleBin(targets);
 
-        assertThat(s3ImageCleanupProcessor.findTargets(0L, cutOff, 10).size()).isZero();
+        assertThat(s3CleanupProcessor.findTargets(0L, cutOff, 10).size()).isZero();
     }
 
     private void insertMockData(List<String> paths, int retryCount, LocalDateTime deletedAt) {
-        List<DeletedImage> deletedImages = paths.stream()
-                .map(path -> new DeletedImage(path, retryCount, deletedAt))
+        List<DeletedFile> deletedFiles = paths.stream()
+                .map(path -> new DeletedFile(path, retryCount, deletedAt))
                 .toList();
 
-        imageRecyclebinRepository.insertBatch(deletedImages);
+        fileRecyclebinRepository.insertBatch(deletedFiles);
     }
 
     private void uploadMockFile(List<String> paths) {

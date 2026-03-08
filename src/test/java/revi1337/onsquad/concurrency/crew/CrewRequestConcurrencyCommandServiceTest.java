@@ -38,7 +38,7 @@ import revi1337.onsquad.crew_member.domain.entity.CrewMemberFactory;
 import revi1337.onsquad.crew_request.application.CrewRequestCommandService;
 import revi1337.onsquad.crew_request.domain.entity.CrewRequest;
 import revi1337.onsquad.crew_request.domain.repository.CrewRequestJpaRepository;
-import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
+import revi1337.onsquad.infrastructure.storage.sqlite.FileRecycleBinRepository;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.member.domain.repository.MemberJpaRepository;
 import revi1337.onsquad.notification.application.listener.NotificationEventListener;
@@ -56,7 +56,7 @@ class CrewRequestConcurrencyCommandServiceTest {
     private CrewLeaderboardService crewLeaderboardService;
 
     @MockBean
-    private ImageRecycleBinRepository imageRecycleBinRepository;
+    private FileRecycleBinRepository fileRecycleBinRepository;
 
     @MockBean
     private ThrottlingAspect throttlingAspect;

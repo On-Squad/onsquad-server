@@ -17,15 +17,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.S3ImageCleanupProcessor.CleanupResult;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FilePaths;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.S3CleanupProcessor.CleanupResult;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FileObjects;
 import revi1337.onsquad.infrastructure.aws.s3.notification.S3FailNotificationProvider;
 
 @ExtendWith(MockitoExtension.class)
 class S3CleanupOrchestratorTest {
 
     @Mock
-    private S3ImageCleanupProcessor cleanupProcessor;
+    private S3CleanupProcessor cleanupProcessor;
 
     @Mock
     private S3FailNotificationProvider notificationProvider;
@@ -38,11 +38,11 @@ class S3CleanupOrchestratorTest {
     void execute_withExceedingFailures() {
         // given
         LocalDateTime startAt = LocalDateTime.now();
-        FilePaths firstTargets = mock(FilePaths.class);
-        FilePaths emptyTargets = mock(FilePaths.class);
-        FilePaths success = mock(FilePaths.class);
-        FilePaths failure = mock(FilePaths.class);
-        FilePaths exceedPaths = mock(FilePaths.class);
+        FileObjects firstTargets = mock(FileObjects.class);
+        FileObjects emptyTargets = mock(FileObjects.class);
+        FileObjects success = mock(FileObjects.class);
+        FileObjects failure = mock(FileObjects.class);
+        FileObjects exceedPaths = mock(FileObjects.class);
 
         given(firstTargets.isEmpty()).willReturn(false);
         given(firstTargets.size()).willReturn(10);

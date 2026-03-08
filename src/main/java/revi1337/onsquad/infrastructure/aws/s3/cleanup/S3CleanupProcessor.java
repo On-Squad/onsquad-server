@@ -7,36 +7,36 @@ import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FilePath;
-import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FilePaths;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FileObject;
+import revi1337.onsquad.infrastructure.aws.s3.cleanup.model.FileObjects;
 import revi1337.onsquad.infrastructure.aws.s3.client.S3StorageCleaner;
 import revi1337.onsquad.infrastructure.aws.s3.client.S3StorageCleaner.DeletedResult;
-import revi1337.onsquad.infrastructure.storage.sqlite.DeletedImage;
-import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
+import revi1337.onsquad.infrastructure.storage.sqlite.DeletedFile;
+import revi1337.onsquad.infrastructure.storage.sqlite.FileRecycleBinRepository;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class S3ImageCleanupProcessor {
+public class S3CleanupProcessor {
 
     public static final int MAX_RETRY_COUNT = 5;
     public static final int BATCH_SIZE = 1000;
 
     private final Executor s3DeletionExecutor;
-    private final ImageRecycleBinRepository imageRecyclebinRepository;
+    private final FileRecycleBinRepository fileRecyclebinRepository;
     private final S3StorageCleaner s3StorageCleaner;
 
-    public FilePaths findTargets(long lastId, LocalDateTime cutOff, int batchSize) {
-        List<FilePath> targets = imageRecyclebinRepository.findByCursor(lastId, cutOff, batchSize).stream()
+    public FileObjects findTargets(long lastId, LocalDateTime cutOff, int batchSize) {
+        List<FileObject> targets = fileRecyclebinRepository.findByCursor(lastId, cutOff, batchSize).stream()
                 .map(this::convert)
                 .toList();
 
-        return new FilePaths(targets);
+        return new FileObjects(targets);
     }
 
-    public CleanupResult executeS3Deletion(FilePaths targets) {
+    public CleanupResult executeS3Deletion(FileObjects targets) {
         List<CompletableFuture<DeletedResult>> futures = targets.partition(BATCH_SIZE).stream()
-                .map(FilePaths::pathValues)
+                .map(FileObjects::pathValues)
                 .map(this::deleteBatchAsync)
                 .toList();
 
@@ -46,18 +46,18 @@ public class S3ImageCleanupProcessor {
         return CleanupResult.of(targets, results);
     }
 
-    public FilePaths updateRetryCountAndGetExceeded(FilePaths failedPaths) {
-        imageRecyclebinRepository.incrementRetryCount(failedPaths.getFileIds());
+    public FileObjects updateRetryCountAndGetExceeded(FileObjects failedPaths) {
+        fileRecyclebinRepository.incrementRetryCount(failedPaths.getFileIds());
 
-        List<FilePath> exceedPaths = failedPaths.stream()
+        List<FileObject> exceedPaths = failedPaths.stream()
                 .filter(failedPath -> failedPath.getRetryCount() + 1 >= MAX_RETRY_COUNT)
                 .toList();
 
-        return new FilePaths(exceedPaths);
+        return new FileObjects(exceedPaths);
     }
 
-    public void deleteFromRecycleBin(FilePaths paths) {
-        imageRecyclebinRepository.deleteByIdIn(paths.getFileIds());
+    public void deleteFromRecycleBin(FileObjects paths) {
+        fileRecyclebinRepository.deleteByIdIn(paths.getFileIds());
     }
 
     private CompletableFuture<DeletedResult> deleteBatchAsync(List<String> pathValues) {
@@ -68,13 +68,13 @@ public class S3ImageCleanupProcessor {
                 });
     }
 
-    private FilePath convert(DeletedImage deletedImage) {
-        return new FilePath(deletedImage.getId(), deletedImage.getPath(), deletedImage.getRetryCount(), deletedImage.getDeletedAt());
+    private FileObject convert(DeletedFile deletedFile) {
+        return new FileObject(deletedFile.getId(), deletedFile.getPath(), deletedFile.getRetryCount(), deletedFile.getDeletedAt());
     }
 
-    public record CleanupResult(FilePaths success, FilePaths failure) {
+    public record CleanupResult(FileObjects success, FileObjects failure) {
 
-        public static CleanupResult of(FilePaths targets, List<DeletedResult> results) {
+        public static CleanupResult of(FileObjects targets, List<DeletedResult> results) {
             List<String> successPaths = results.stream().flatMap(r -> r.deletedPaths().stream()).toList();
             List<String> failedPaths = results.stream().flatMap(r -> r.failedPaths().stream()).toList();
 

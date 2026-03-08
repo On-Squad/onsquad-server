@@ -10,13 +10,13 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class FilePathsTest {
+class FileObjectsTest {
 
     @Test
     @DisplayName("리스트가 비어있는지 확인한다")
     void checkEmpty() {
-        FilePaths emptyFiles = new FilePaths(List.of());
-        FilePaths existFiles = new FilePaths(createSampleFiles(1));
+        FileObjects emptyFiles = new FileObjects(List.of());
+        FileObjects existFiles = new FileObjects(createSampleFiles(1));
 
         assertSoftly(softly -> {
             softly.assertThat(emptyFiles.isEmpty()).isTrue();
@@ -29,9 +29,9 @@ class FilePathsTest {
     @Test
     @DisplayName("지정한 사이즈 단위로 리스트를 분할(Partition)한다")
     void partition() {
-        FilePaths targets = new FilePaths(createSampleFiles(10));
+        FileObjects targets = new FileObjects(createSampleFiles(10));
 
-        List<FilePaths> partitions = targets.partition(3);
+        List<FileObjects> partitions = targets.partition(3);
 
         assertSoftly(softly -> {
             softly.assertThat(partitions).hasSize(4);
@@ -45,10 +45,10 @@ class FilePathsTest {
     @Test
     @DisplayName("경로 리스트와 일치하는 파일들만 필터링한다")
     void filterByPaths() {
-        FilePaths targets = new FilePaths(createSampleFiles(5));
+        FileObjects targets = new FileObjects(createSampleFiles(5));
         List<String> searchPaths = List.of("path/file-1.png", "path/file-3.png", "non-exist.png");
 
-        FilePaths filtered = targets.filterByPaths(searchPaths);
+        FileObjects filtered = targets.filterByPaths(searchPaths);
 
         assertSoftly(softly -> {
             softly.assertThat(filtered.size()).isEqualTo(2);
@@ -60,11 +60,11 @@ class FilePathsTest {
     @DisplayName("ID 리스트와 경로(String) 리스트를 정확히 추출한다")
     void extractValues() {
         LocalDateTime deletedAt = LocalDateTime.now();
-        List<FilePath> rawList = List.of(
-                new FilePath(10L, "a.jpg", 0, deletedAt),
-                new FilePath(20L, "b.jpg", 0, deletedAt)
+        List<FileObject> rawList = List.of(
+                new FileObject(10L, "a.jpg", 0, deletedAt),
+                new FileObject(20L, "b.jpg", 0, deletedAt)
         );
-        FilePaths targets = new FilePaths(rawList);
+        FileObjects targets = new FileObjects(rawList);
 
         assertSoftly(softly -> {
             softly.assertThat(targets.getFileIds()).containsExactly(10L, 20L);
@@ -75,7 +75,7 @@ class FilePathsTest {
     @Test
     @DisplayName("리스트의 마지막 파일 ID를 정확히 가져온다")
     void getLastFileId() {
-        FilePaths targets = new FilePaths(createSampleFiles(5));
+        FileObjects targets = new FileObjects(createSampleFiles(5));
 
         long lastId = targets.getLastFileId();
 
@@ -85,7 +85,7 @@ class FilePathsTest {
     @Test
     @DisplayName("파일 리스트가 비어있을 경우 마지막 ID는 0을 반환한다")
     void getLastFileId_Empty() {
-        FilePaths emptyFiles = new FilePaths(List.of());
+        FileObjects emptyFiles = new FileObjects(List.of());
 
         long lastId = emptyFiles.getLastFileId();
 
@@ -95,17 +95,17 @@ class FilePathsTest {
     @Test
     @DisplayName("파일이 하나만 있을 경우 그 파일의 ID를 반환한다")
     void getLastFileIdSingle() {
-        FilePaths singleFile = new FilePaths(createSampleFiles(1));
+        FileObjects singleFile = new FileObjects(createSampleFiles(1));
 
         long lastId = singleFile.getLastFileId();
 
         assertThat(lastId).isEqualTo(1L);
     }
 
-    private List<FilePath> createSampleFiles(int count) {
+    private List<FileObject> createSampleFiles(int count) {
         LocalDateTime deletedAt = LocalDateTime.now();
         return IntStream.rangeClosed(1, count)
-                .mapToObj(i -> new FilePath((long) i, "path/file-" + i + ".png", 0, deletedAt))
+                .mapToObj(i -> new FileObject((long) i, "path/file-" + i + ".png", 0, deletedAt))
                 .collect(Collectors.toList());
     }
 }

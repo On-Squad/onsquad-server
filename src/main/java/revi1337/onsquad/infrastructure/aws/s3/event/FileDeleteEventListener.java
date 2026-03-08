@@ -10,15 +10,15 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.CollectionUtils;
 import revi1337.onsquad.common.util.UrlUtils;
 import revi1337.onsquad.infrastructure.aws.cloudfront.CloudFrontProperties;
-import revi1337.onsquad.infrastructure.storage.sqlite.DeletedImage;
-import revi1337.onsquad.infrastructure.storage.sqlite.ImageRecycleBinRepository;
+import revi1337.onsquad.infrastructure.storage.sqlite.DeletedFile;
+import revi1337.onsquad.infrastructure.storage.sqlite.FileRecycleBinRepository;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FileDeleteEventListener {
 
-    private final ImageRecycleBinRepository imageRecyclebinRepository;
+    private final FileRecycleBinRepository fileRecyclebinRepository;
     private final CloudFrontProperties cloudFrontProperties;
 
     @Async("fileDeletionRecorder")
@@ -29,13 +29,13 @@ public class FileDeleteEventListener {
         }
 
         LocalDateTime deletedAt = LocalDateTime.now();
-        List<DeletedImage> deletedImages = event.getFileUrls().stream()
+        List<DeletedFile> deletedFiles = event.getFileUrls().stream()
                 .map(this::extractPath)
-                .map(filePath -> new DeletedImage(filePath, deletedAt))
+                .map(filePath -> new DeletedFile(filePath, deletedAt))
                 .toList();
 
-        imageRecyclebinRepository.insertBatch(deletedImages);
-        log.debug("{} file paths have been stored in SQLite for batch deletion", deletedImages.size());
+        fileRecyclebinRepository.insertBatch(deletedFiles);
+        log.debug("{} file paths have been stored in SQLite for batch deletion", deletedFiles.size());
     }
 
     private String extractPath(String imageUrl) {
