@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.ApplicationLayerTestSupport;
 import revi1337.onsquad.common.config.web.ObjectMapperConfig;
 import revi1337.onsquad.common.container.RedisTestContainerInitializer;

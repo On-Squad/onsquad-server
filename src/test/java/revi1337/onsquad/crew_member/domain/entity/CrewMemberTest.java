@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import revi1337.onsquad.crew.domain.entity.Crew;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 import revi1337.onsquad.member.domain.entity.Member;
 
 class CrewMemberTest {

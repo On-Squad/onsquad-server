@@ -7,12 +7,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.aspect.RequestCacheHandler;
-import revi1337.onsquad.common.aspect.RequestCacheHandlerComposite;
+import revi1337.onsquad.common.aspect.RequestCacheHandlerChain;
 
 /**
  * RedisRequestCacheHandler For RequestCacheHandlerExecutionChain
  *
- * @see RequestCacheHandlerComposite
+ * @see RequestCacheHandlerChain
  */
 @Slf4j
 @Order(1)

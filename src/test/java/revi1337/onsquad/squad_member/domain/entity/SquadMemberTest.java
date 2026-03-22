@@ -15,7 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.squad.domain.entity.Squad;
-import revi1337.onsquad.squad_member.domain.entity.vo.SquadRole;
+import revi1337.onsquad.squad_member.domain.SquadRole;
 
 class SquadMemberTest {
 

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 import lombok.Getter;
-import revi1337.onsquad.common.application.mail.EmailContent;
+import revi1337.onsquad.common.domain.EmailContent;
 
 @Getter
 public class VerificationCode implements EmailContent {
@@ -21,11 +21,6 @@ public class VerificationCode implements EmailContent {
         this.expiredAt = Instant.ofEpochMilli(expireMilli)
                 .atZone(TimeZone.getDefault().toZoneId())
                 .toLocalDateTime();
-    }
-
-    @Override
-    public String getContent() {
-        return code;
     }
 
     public boolean isAvailableAt(LocalDateTime now) {

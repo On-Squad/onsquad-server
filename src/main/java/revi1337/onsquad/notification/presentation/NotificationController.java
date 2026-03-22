@@ -19,7 +19,7 @@ import revi1337.onsquad.auth.token.application.JsonWebTokenManager;
 import revi1337.onsquad.auth.token.domain.model.ClaimsParser;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.common.dto.RestResponse;
-import revi1337.onsquad.common.support.AdaptivePageable;
+import revi1337.onsquad.common.presentation.support.AdaptivePageable;
 import revi1337.onsquad.notification.application.NotificationCommandService;
 import revi1337.onsquad.notification.application.NotificationQueryService;
 import revi1337.onsquad.notification.application.NotificationService;

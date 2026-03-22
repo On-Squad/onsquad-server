@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.crew_member.application.CrewMemberAccessor;
 import revi1337.onsquad.crew_member.domain.entity.CrewMember;

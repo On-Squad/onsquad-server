@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import revi1337.onsquad.common.PresentationLayerTestSupport;
 import revi1337.onsquad.crew_member.application.leaderboard.CrewRankerQueryService;
 import revi1337.onsquad.crew_member.application.response.CrewRankerResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @WebMvcTest(CrewLeaderboardController.class)
 class CrewLeaderboardControllerTest extends PresentationLayerTestSupport {

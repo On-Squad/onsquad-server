@@ -6,12 +6,12 @@ import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.aspect.RequestCacheHandler;
-import revi1337.onsquad.common.aspect.RequestCacheHandlerComposite;
+import revi1337.onsquad.common.aspect.RequestCacheHandlerChain;
 
 /**
  * DefaultRequestCacheHandler For RequestCacheHandlerExecutionChain
  *
- * @see RequestCacheHandlerComposite
+ * @see RequestCacheHandlerChain
  */
 @Order(2)
 @Component

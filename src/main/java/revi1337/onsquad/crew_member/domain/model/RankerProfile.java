@@ -1,7 +1,7 @@
 package revi1337.onsquad.crew_member.domain.model;
 
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 public class RankerProfile {
 

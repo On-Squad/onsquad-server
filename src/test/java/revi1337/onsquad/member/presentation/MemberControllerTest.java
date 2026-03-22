@@ -51,7 +51,7 @@ import revi1337.onsquad.member.application.MemberCommandServiceFacade;
 import revi1337.onsquad.member.application.MemberQueryService;
 import revi1337.onsquad.member.application.dto.MemberCreateDto;
 import revi1337.onsquad.member.application.dto.response.MemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 import revi1337.onsquad.member.presentation.request.MemberCreateRequest;
 import revi1337.onsquad.member.presentation.request.MemberPasswordUpdateRequest;
 import revi1337.onsquad.member.presentation.request.MemberUpdateRequest;

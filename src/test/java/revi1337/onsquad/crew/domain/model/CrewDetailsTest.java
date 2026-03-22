@@ -8,15 +8,15 @@ import static revi1337.onsquad.common.fixture.MemberFixture.createRevi;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import revi1337.onsquad.crew.domain.entity.vo.Introduce;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
+import revi1337.onsquad.crew.domain.vo.Introduce;
+import revi1337.onsquad.crew.domain.vo.Name;
 import revi1337.onsquad.crew_hashtag.domain.CrewHashtags;
 import revi1337.onsquad.crew_hashtag.domain.entity.CrewHashtag;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
 import revi1337.onsquad.member.domain.model.SimpleMember;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 class CrewDetailsTest {
 
@@ -75,7 +75,7 @@ class CrewDetailsTest {
                 "image-url",
                 "kakao-link",
                 20L,
-                new SimpleMember(1L, new Nickname("방장"), new revi1337.onsquad.member.domain.entity.vo.Introduce("안녕"), Mbti.ENTJ)
+                new SimpleMember(1L, new Nickname("방장"), new revi1337.onsquad.member.domain.vo.Introduce("안녕"), Mbti.ENTJ)
         );
     }
 

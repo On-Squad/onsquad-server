@@ -18,7 +18,7 @@ import revi1337.onsquad.announce.domain.error.AnnounceErrorCode;
 import revi1337.onsquad.announce.domain.model.AnnounceReference;
 import revi1337.onsquad.announce.domain.repository.AnnounceQueryDslRepository;
 import revi1337.onsquad.crew_member.domain.entity.CrewMember;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 import revi1337.onsquad.crew_member.domain.error.CrewMemberBusinessException;
 import revi1337.onsquad.crew_member.domain.error.CrewMemberErrorCode;
 import revi1337.onsquad.crew_member.domain.model.CrewMembers;

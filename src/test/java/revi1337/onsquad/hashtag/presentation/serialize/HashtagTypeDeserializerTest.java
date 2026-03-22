@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.Import;
 import revi1337.onsquad.common.config.web.ObjectMapperConfig;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 @JsonTest
 @Import(ObjectMapperConfig.class)

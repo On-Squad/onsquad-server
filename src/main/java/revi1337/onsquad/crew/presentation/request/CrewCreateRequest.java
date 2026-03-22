@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import revi1337.onsquad.crew.application.dto.CrewCreateDto;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 public record CrewCreateRequest(
         @NotEmpty String name,

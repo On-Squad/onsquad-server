@@ -14,7 +14,7 @@ import revi1337.onsquad.auth.support.Authenticate;
 import revi1337.onsquad.auth.support.CurrentMember;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.common.dto.RestResponse;
-import revi1337.onsquad.common.support.AdaptivePageable;
+import revi1337.onsquad.common.presentation.support.AdaptivePageable;
 import revi1337.onsquad.crew_request.application.CrewRequestCommandService;
 import revi1337.onsquad.crew_request.application.CrewRequestQueryService;
 import revi1337.onsquad.crew_request.application.response.CrewRequestResponse;

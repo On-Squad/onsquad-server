@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import revi1337.onsquad.member.domain.entity.vo.Introduce;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
 import revi1337.onsquad.member.domain.model.SimpleMember;
+import revi1337.onsquad.member.domain.vo.Introduce;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
 import revi1337.onsquad.squad_comment.domain.model.SquadCommentDetail;
 
 @Deprecated

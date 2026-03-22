@@ -9,6 +9,7 @@ import revi1337.onsquad.infrastructure.aws.s3.event.FileDeleteEvent;
 import revi1337.onsquad.member.application.dto.MemberCreateDto;
 import revi1337.onsquad.member.application.dto.MemberPasswordUpdateDto;
 import revi1337.onsquad.member.application.dto.MemberUpdateDto;
+import revi1337.onsquad.member.infrastructure.MemberFileStorageManager;
 
 @Service
 @RequiredArgsConstructor

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import javax.annotation.Nullable;
 import revi1337.onsquad.crew.domain.model.CrewDetail;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

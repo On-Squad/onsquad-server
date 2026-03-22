@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import revi1337.onsquad.category.domain.entity.Category;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.category.domain.repository.CategoryRepository;
 
 @ExtendWith(MockitoExtension.class)

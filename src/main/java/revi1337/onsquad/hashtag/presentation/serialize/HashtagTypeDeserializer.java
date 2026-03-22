@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 public class HashtagTypeDeserializer extends StdDeserializer<HashtagType> {
 

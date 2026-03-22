@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 class CrewHashtagTest {
 

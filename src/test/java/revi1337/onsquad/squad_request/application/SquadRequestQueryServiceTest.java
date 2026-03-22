@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.ApplicationLayerTestSupport;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.crew.domain.entity.Crew;

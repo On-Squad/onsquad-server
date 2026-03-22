@@ -40,7 +40,7 @@ import org.springframework.data.domain.Pageable;
 import revi1337.onsquad.common.PresentationLayerTestSupport;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 import revi1337.onsquad.squad_comment.application.SquadCommentCommandService;
 import revi1337.onsquad.squad_comment.application.SquadCommentQueryService;
 import revi1337.onsquad.squad_comment.application.response.SquadCommentResponse;

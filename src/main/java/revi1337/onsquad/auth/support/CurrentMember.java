@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import revi1337.onsquad.member.application.dto.MemberSummary;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 public record CurrentMember(
         Long id,

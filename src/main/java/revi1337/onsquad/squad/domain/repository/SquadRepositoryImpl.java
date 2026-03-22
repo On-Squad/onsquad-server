@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.squad.domain.entity.Squad;
 import revi1337.onsquad.squad.domain.model.SimpleSquad;
 import revi1337.onsquad.squad.domain.model.SquadDetail;

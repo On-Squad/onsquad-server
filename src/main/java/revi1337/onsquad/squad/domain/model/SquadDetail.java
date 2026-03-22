@@ -2,12 +2,12 @@ package revi1337.onsquad.squad.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.member.domain.model.SimpleMember;
 import revi1337.onsquad.squad.domain.SquadLinkable;
-import revi1337.onsquad.squad.domain.entity.vo.Address;
-import revi1337.onsquad.squad.domain.entity.vo.Content;
-import revi1337.onsquad.squad.domain.entity.vo.Title;
+import revi1337.onsquad.squad.domain.vo.Address;
+import revi1337.onsquad.squad.domain.vo.Content;
+import revi1337.onsquad.squad.domain.vo.Title;
 
 public record SquadDetail(
         Long id,

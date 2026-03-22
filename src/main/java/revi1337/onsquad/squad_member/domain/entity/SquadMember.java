@@ -4,8 +4,8 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
-import static revi1337.onsquad.squad_member.domain.entity.vo.SquadRole.GENERAL;
-import static revi1337.onsquad.squad_member.domain.entity.vo.SquadRole.LEADER;
+import static revi1337.onsquad.squad_member.domain.SquadRole.GENERAL;
+import static revi1337.onsquad.squad_member.domain.SquadRole.LEADER;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.squad.domain.entity.Squad;
-import revi1337.onsquad.squad_member.domain.entity.vo.SquadRole;
+import revi1337.onsquad.squad_member.domain.SquadRole;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

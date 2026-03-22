@@ -2,9 +2,9 @@ package revi1337.onsquad.member.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Introduce;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
 import revi1337.onsquad.member.domain.model.SimpleMember;
+import revi1337.onsquad.member.domain.vo.Introduce;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SimpleMemberResponse(

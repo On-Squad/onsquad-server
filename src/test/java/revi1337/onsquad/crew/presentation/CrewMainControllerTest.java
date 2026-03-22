@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import revi1337.onsquad.announce.application.dto.response.AnnounceResponse;
 import revi1337.onsquad.announce.application.dto.response.AnnounceStates;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.PresentationLayerTestSupport;
 import revi1337.onsquad.crew.application.CrewMainService;
 import revi1337.onsquad.crew.application.dto.response.CrewMainResponse;
@@ -34,10 +34,10 @@ import revi1337.onsquad.crew.application.dto.response.CrewManageResponse;
 import revi1337.onsquad.crew.application.dto.response.CrewResponse;
 import revi1337.onsquad.crew.application.dto.response.CrewStates;
 import revi1337.onsquad.crew_member.application.response.CrewRankerResponse;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.crew_member.domain.CrewRole;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 import revi1337.onsquad.squad.application.response.SquadResponse;
 
 @WebMvcTest(CrewMainController.class)

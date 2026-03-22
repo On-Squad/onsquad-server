@@ -12,7 +12,7 @@ import revi1337.onsquad.auth.support.Authenticate;
 import revi1337.onsquad.auth.support.CurrentMember;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.common.dto.RestResponse;
-import revi1337.onsquad.common.support.AdaptivePageable;
+import revi1337.onsquad.common.presentation.support.AdaptivePageable;
 import revi1337.onsquad.history.application.HistoryQueryService;
 import revi1337.onsquad.history.application.response.HistoryResponse;
 import revi1337.onsquad.history.domain.HistoryType;

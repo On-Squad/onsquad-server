@@ -2,7 +2,7 @@ package revi1337.onsquad.squad.application.response;
 
 import java.util.ArrayList;
 import java.util.List;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
 import revi1337.onsquad.squad.domain.entity.Squad;
 import revi1337.onsquad.squad.domain.model.SimpleSquad;

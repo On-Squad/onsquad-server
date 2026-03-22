@@ -1,7 +1,7 @@
 package revi1337.onsquad.category.presentation.converter;
 
 import org.springframework.core.convert.converter.Converter;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 
 public class CategoryTypeConverter implements Converter<String, CategoryType> {
 

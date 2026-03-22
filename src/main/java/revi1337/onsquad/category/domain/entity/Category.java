@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 
 @Getter
 @Entity

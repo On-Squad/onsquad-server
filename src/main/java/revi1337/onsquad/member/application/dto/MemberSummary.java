@@ -1,7 +1,7 @@
 package revi1337.onsquad.member.application.dto;
 
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 public record MemberSummary(
         Long id,

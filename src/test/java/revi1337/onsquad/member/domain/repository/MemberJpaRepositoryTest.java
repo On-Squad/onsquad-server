@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import revi1337.onsquad.common.PersistenceLayerTestSupport;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Email;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Email;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 class MemberJpaRepositoryTest extends PersistenceLayerTestSupport {
 

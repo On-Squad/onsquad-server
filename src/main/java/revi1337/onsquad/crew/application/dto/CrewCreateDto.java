@@ -2,7 +2,7 @@ package revi1337.onsquad.crew.application.dto;
 
 import java.util.List;
 import revi1337.onsquad.crew.domain.model.CrewCreateSpec;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.domain.entity.Member;
 
 public record CrewCreateDto(

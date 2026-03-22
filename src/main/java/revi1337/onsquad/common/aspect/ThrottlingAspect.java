@@ -24,12 +24,12 @@ import revi1337.onsquad.common.error.CommonErrorCode;
 public class ThrottlingAspect {
 
     private final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
-    private final RequestCacheHandler requestCacheHandlerComposite;
+    private final RequestCacheHandler requestCacheHandlerChain;
 
     @Before("@annotation(throttling)")
     public void checkInitialRequest(JoinPoint joinPoint, Throttling throttling) {
         String redisKey = generateRedisKey(joinPoint, throttling);
-        boolean firstRequest = requestCacheHandlerComposite
+        boolean firstRequest = requestCacheHandlerChain
                 .isFirstRequest(redisKey, LocalDateTime.now().toString(), throttling.during(), throttling.unit());
         if (!firstRequest) {
             throw new CommonBusinessException.ToManyRequest(CommonErrorCode.TO_MANY_REQUEST);

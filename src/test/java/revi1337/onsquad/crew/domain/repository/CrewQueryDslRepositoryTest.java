@@ -28,7 +28,7 @@ import revi1337.onsquad.crew_member.domain.entity.CrewMemberFactory;
 import revi1337.onsquad.crew_request.domain.entity.CrewRequest;
 import revi1337.onsquad.crew_request.domain.repository.CrewRequestJpaRepository;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.member.domain.repository.MemberJpaRepository;
 import revi1337.onsquad.squad.domain.entity.Squad;

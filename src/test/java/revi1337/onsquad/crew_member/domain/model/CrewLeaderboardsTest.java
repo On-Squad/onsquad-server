@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 class CrewLeaderboardsTest {
 

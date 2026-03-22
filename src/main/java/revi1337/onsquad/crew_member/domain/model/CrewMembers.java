@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import revi1337.onsquad.crew_member.domain.entity.CrewMember;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 
 public class CrewMembers {
 

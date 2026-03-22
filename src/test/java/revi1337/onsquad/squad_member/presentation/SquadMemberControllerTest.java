@@ -35,7 +35,7 @@ import revi1337.onsquad.common.PresentationLayerTestSupport;
 import revi1337.onsquad.common.dto.PageResponse;
 import revi1337.onsquad.crew_member.application.response.CrewMemberStates;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 import revi1337.onsquad.squad.application.response.SimpleSquadResponse;
 import revi1337.onsquad.squad_member.application.SquadMemberCommandService;
 import revi1337.onsquad.squad_member.application.SquadMemberQueryService;

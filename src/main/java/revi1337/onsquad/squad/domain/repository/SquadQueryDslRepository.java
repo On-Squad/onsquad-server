@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.domain.OrderSpecifierBuilder;
 import revi1337.onsquad.member.domain.model.SimpleMember;
 import revi1337.onsquad.squad.domain.entity.Squad;

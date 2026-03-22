@@ -3,11 +3,11 @@ package revi1337.onsquad.squad.application.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import revi1337.onsquad.category.domain.entity.Category;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
 import revi1337.onsquad.squad.domain.entity.Squad;
-import revi1337.onsquad.squad.domain.entity.vo.Address;
 import revi1337.onsquad.squad.domain.model.SquadDetail;
+import revi1337.onsquad.squad.domain.vo.Address;
 import revi1337.onsquad.squad_category.domain.entity.SquadCategory;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -3,11 +3,11 @@ package revi1337.onsquad.member.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Email;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
 import revi1337.onsquad.member.domain.error.MemberBusinessException;
 import revi1337.onsquad.member.domain.error.MemberErrorCode;
 import revi1337.onsquad.member.domain.repository.MemberRepository;
+import revi1337.onsquad.member.domain.vo.Email;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 @Component
 @RequiredArgsConstructor

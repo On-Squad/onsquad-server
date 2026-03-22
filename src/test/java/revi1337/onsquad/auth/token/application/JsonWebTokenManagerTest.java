@@ -29,7 +29,7 @@ import revi1337.onsquad.auth.token.infrastructure.persistence.RedisRefreshTokenS
 import revi1337.onsquad.common.config.system.properties.OnsquadProperties;
 import revi1337.onsquad.common.container.RedisTestContainerInitializer;
 import revi1337.onsquad.member.application.dto.MemberSummary;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 @TestPropertySource(properties = {
         "onsquad.token.access-token.attributes.expired=5m",

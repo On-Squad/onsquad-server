@@ -6,8 +6,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.squad.domain.entity.Squad;
-import revi1337.onsquad.squad.domain.entity.vo.Title;
 import revi1337.onsquad.squad.domain.model.SquadCreateSpec;
+import revi1337.onsquad.squad.domain.vo.Title;
 
 public class SquadFixture {
 

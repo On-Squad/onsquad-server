@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import revi1337.onsquad.crew.domain.entity.Crew;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
+import revi1337.onsquad.crew.domain.vo.Name;
 import revi1337.onsquad.crew.domain.model.CrewDetail;
 import revi1337.onsquad.crew.domain.model.CrewStatistic;
 import revi1337.onsquad.crew.domain.model.CrewWithOwnerState;

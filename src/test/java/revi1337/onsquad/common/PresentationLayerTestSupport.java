@@ -24,7 +24,7 @@ import revi1337.onsquad.auth.token.application.JsonWebTokenManager;
 import revi1337.onsquad.auth.token.domain.model.ClaimsParser;
 import revi1337.onsquad.common.config.PresentationLayerConfiguration;
 import revi1337.onsquad.common.config.web.WebMvcConfig;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 @Import({WebMvcConfig.class, PresentationLayerConfiguration.class})
 @WebMvcTest

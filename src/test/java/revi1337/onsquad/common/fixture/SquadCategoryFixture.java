@@ -2,7 +2,7 @@ package revi1337.onsquad.common.fixture;
 
 import java.util.List;
 import revi1337.onsquad.category.domain.entity.Category;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.squad.domain.entity.Squad;
 import revi1337.onsquad.squad_category.domain.entity.SquadCategory;
 

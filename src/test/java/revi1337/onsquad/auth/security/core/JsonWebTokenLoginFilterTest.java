@@ -36,7 +36,7 @@ import revi1337.onsquad.auth.token.domain.model.AccessToken;
 import revi1337.onsquad.auth.token.domain.model.JsonWebToken;
 import revi1337.onsquad.auth.token.domain.model.RefreshToken;
 import revi1337.onsquad.common.PresentationLayerTestSupport;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 @WebMvcTest(JsonWebTokenLoginFilter.class)
 class JsonWebTokenLoginFilterTest extends PresentationLayerTestSupport {

@@ -4,9 +4,9 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.GENERAL;
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.MANAGER;
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.OWNER;
+import static revi1337.onsquad.crew_member.domain.CrewRole.GENERAL;
+import static revi1337.onsquad.crew_member.domain.CrewRole.MANAGER;
+import static revi1337.onsquad.crew_member.domain.CrewRole.OWNER;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import revi1337.onsquad.crew.domain.entity.Crew;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 import revi1337.onsquad.member.domain.entity.Member;
 
 @Getter

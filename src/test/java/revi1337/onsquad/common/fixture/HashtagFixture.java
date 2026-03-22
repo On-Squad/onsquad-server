@@ -3,7 +3,7 @@ package revi1337.onsquad.common.fixture;
 import java.util.Arrays;
 import java.util.List;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 public class HashtagFixture {
 

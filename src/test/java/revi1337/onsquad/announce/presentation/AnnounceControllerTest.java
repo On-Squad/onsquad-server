@@ -45,9 +45,9 @@ import revi1337.onsquad.announce.application.dto.response.AnnouncesWithWriteStat
 import revi1337.onsquad.announce.presentation.request.AnnounceCreateRequest;
 import revi1337.onsquad.announce.presentation.request.AnnounceUpdateRequest;
 import revi1337.onsquad.common.PresentationLayerTestSupport;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @WebMvcTest(AnnounceController.class)
 class AnnounceControllerTest extends PresentationLayerTestSupport {

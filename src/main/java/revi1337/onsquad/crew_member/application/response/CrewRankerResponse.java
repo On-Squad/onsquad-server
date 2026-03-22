@@ -2,7 +2,7 @@ package revi1337.onsquad.crew_member.application.response;
 
 import java.time.LocalDateTime;
 import revi1337.onsquad.crew_member.domain.entity.CrewRanker;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 public record CrewRankerResponse(
         Long crewId,

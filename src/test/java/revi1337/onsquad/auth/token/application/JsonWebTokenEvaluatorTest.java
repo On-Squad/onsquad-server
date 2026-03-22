@@ -22,7 +22,7 @@ import revi1337.onsquad.auth.token.domain.model.RefreshToken;
 import revi1337.onsquad.auth.token.infrastructure.TokenProperties;
 import revi1337.onsquad.auth.token.infrastructure.TokenProperties.TokenAttributes;
 import revi1337.onsquad.common.config.system.properties.OnsquadProperties;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 @TestPropertySource(properties = {
         "onsquad.token.access-token.attributes.expired=5m",

@@ -1,7 +1,7 @@
 package revi1337.onsquad.auth.oauth.infrastructure.google;
 
 import revi1337.onsquad.auth.oauth.application.contract.OAuth2VendorUserProfile;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 public record GoogleOAuth2UserProfile(
         String name,

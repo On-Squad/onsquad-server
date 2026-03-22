@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.crew.domain.entity.Crew;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
+import revi1337.onsquad.crew.domain.vo.Name;
 import revi1337.onsquad.crew.domain.error.CrewBusinessException;
 import revi1337.onsquad.crew.domain.error.CrewErrorCode;
 import revi1337.onsquad.crew.domain.model.CrewDetail;

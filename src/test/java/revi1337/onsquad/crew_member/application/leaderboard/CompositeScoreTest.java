@@ -92,6 +92,19 @@ class CompositeScoreTest {
 
             assertThat(result.getRawValue()).as("9,007,189,999,999,999").isEqualTo(originalRaw);
         }
+
+        @Test
+        @DisplayName("최대 정밀도 한계 테스트: 점수가 900,719점일 때 초 단위(1의 자리) 정밀도를 유지하지 못한다.")
+        void test6() {
+            long originalRaw = (900_719L * CompositeScore.MULTIPLIER) + 9_999_999_999L;
+            double redisScore = (double) originalRaw;
+
+            CompositeScore result = CompositeScore.from(redisScore);
+
+            assertThat(result.getRawValue())
+                    .as("정밀도 손실 발생: original=%d, actual=%d", originalRaw, result.getRawValue())
+                    .isNotEqualTo(originalRaw);
+        }
     }
 
     @Nested

@@ -1,7 +1,7 @@
 package revi1337.onsquad.crew.domain.model;
 
-import revi1337.onsquad.crew.domain.entity.vo.Introduce;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
+import revi1337.onsquad.crew.domain.vo.Introduce;
+import revi1337.onsquad.crew.domain.vo.Name;
 import revi1337.onsquad.member.domain.model.SimpleMember;
 
 public record SimpleCrew(

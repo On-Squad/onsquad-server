@@ -1,7 +1,7 @@
 package revi1337.onsquad.squad.domain;
 
 import java.util.List;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 
 public interface SquadLinkable {
 

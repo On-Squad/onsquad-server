@@ -34,7 +34,7 @@ import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.crew.domain.error.CrewBusinessException;
 import revi1337.onsquad.crew.domain.repository.CrewRepository;
 import revi1337.onsquad.crew_hashtag.domain.repository.CrewHashtagRepository;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.infrastructure.aws.s3.event.FileDeleteEvent;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.member.domain.repository.MemberRepository;

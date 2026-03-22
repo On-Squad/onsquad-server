@@ -16,8 +16,8 @@ import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.squad.domain.error.SquadDomainException;
 import revi1337.onsquad.squad.domain.model.SquadCreateSpec;
+import revi1337.onsquad.squad_member.domain.SquadRole;
 import revi1337.onsquad.squad_member.domain.entity.SquadMember;
-import revi1337.onsquad.squad_member.domain.entity.vo.SquadRole;
 
 class SquadTest {
 

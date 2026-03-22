@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import revi1337.onsquad.crew.application.dto.CrewCreateDto;
 import revi1337.onsquad.crew.application.dto.CrewUpdateDto;
 import revi1337.onsquad.crew.domain.error.CrewBusinessException;
+import revi1337.onsquad.crew.infrastructure.CrewFileStorageManager;
 import revi1337.onsquad.infrastructure.aws.s3.event.FileDeleteEvent;
 
 @Service

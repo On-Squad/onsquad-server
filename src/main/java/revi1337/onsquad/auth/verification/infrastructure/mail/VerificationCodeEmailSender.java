@@ -17,13 +17,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import revi1337.onsquad.auth.verification.domain.VerificationCode;
-import revi1337.onsquad.common.application.mail.EmailContent;
 import revi1337.onsquad.common.application.mail.EmailSender;
 import revi1337.onsquad.infrastructure.network.mail.EmailException;
 
 @Slf4j
 @Component
-public class VerificationCodeEmailSender implements EmailSender {
+public class VerificationCodeEmailSender implements EmailSender<VerificationCode> {
 
     private static final String CLASSPATH_MAIL_TEMPLATE = "template/mail/verification-code.html";
     private static final String MIME_SETTING_ERROR_LOG = "MimeMessage 설정 중 예외 발생 - 메일 발송 중단";
@@ -37,19 +36,16 @@ public class VerificationCodeEmailSender implements EmailSender {
     private final String cloudfrontBaseDomain;
     private final String emailTemplate;
 
-    public VerificationCodeEmailSender(
-            JavaMailSender javaMailSender,
-            @Value("${onsquad.aws.cloud-front.base-domain}") String cloudfrontBaseDomain
-    ) {
+    public VerificationCodeEmailSender(JavaMailSender javaMailSender, @Value("${onsquad.aws.cloud-front.base-domain}") String cloudfrontBaseDomain) {
         this.javaMailSender = javaMailSender;
         this.cloudfrontBaseDomain = cloudfrontBaseDomain;
         this.emailTemplate = loadTemplate();
     }
 
     @Override
-    public void sendEmail(String subject, EmailContent content, String to) {
+    public void sendEmail(String subject, VerificationCode verificationCode, String to) {
         try {
-            MimeMessage mimeMessage = createMimeMessage(subject, content, to);
+            MimeMessage mimeMessage = createMimeMessage(subject, verificationCode, to);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error(MIME_SETTING_ERROR_LOG, e);
@@ -60,11 +56,11 @@ public class VerificationCodeEmailSender implements EmailSender {
         }
     }
 
-    private MimeMessage createMimeMessage(String subject, EmailContent content, String to) throws MessagingException {
+    private MimeMessage createMimeMessage(String subject, VerificationCode verificationCode, String to) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
 
-        String baseHyperText = buildEmailBody(content);
+        String baseHyperText = buildEmailBody(verificationCode);
         mimeMessageHelper.setText(baseHyperText, true);
         mimeMessageHelper.setTo(to);
         mimeMessageHelper.setSubject(subject);
@@ -72,13 +68,12 @@ public class VerificationCodeEmailSender implements EmailSender {
         return mimeMessage;
     }
 
-    private String buildEmailBody(EmailContent content) {
-        VerificationCode verificationCode = (VerificationCode) content;
+    private String buildEmailBody(VerificationCode verificationCode) {
         return MessageFormat.format(
                 emailTemplate,
                 cloudfrontBaseDomain + ONSQUAD_MAIL_BACKGROUND,
                 cloudfrontBaseDomain + ONSQUAD_PRIMARY_LOGO,
-                verificationCode.getContent(),
+                verificationCode.getCode(),
                 verificationCode.getExpiredAt().format(VERIFICATION_CODE_DATETIME_FORMATTER),
                 cloudfrontBaseDomain + ONSQUAD_SQUARE_LOGO
         );

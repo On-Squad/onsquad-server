@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.hashtag.domain.repository.HashtagJpaRepository;
 
 @ExtendWith(MockitoExtension.class)

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.squad.domain.entity.Squad;
 import revi1337.onsquad.squad.domain.error.SquadBusinessException;
 import revi1337.onsquad.squad.domain.error.SquadErrorCode;

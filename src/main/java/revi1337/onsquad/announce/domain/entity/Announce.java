@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import revi1337.onsquad.announce.domain.entity.vo.Title;
+import revi1337.onsquad.announce.domain.vo.Title;
 import revi1337.onsquad.common.domain.BaseEntity;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.member.domain.entity.Member;

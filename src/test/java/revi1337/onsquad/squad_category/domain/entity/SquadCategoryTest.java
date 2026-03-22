@@ -8,7 +8,7 @@ import static revi1337.onsquad.common.fixture.SquadFixture.createSquad;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import revi1337.onsquad.category.domain.entity.Category;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.squad.domain.entity.Squad;

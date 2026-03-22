@@ -1,7 +1,9 @@
 package revi1337.onsquad.common.application.mail;
 
-public interface EmailSender { // TODO PATTERN 이거 Naver 는 잘되는데, GOOGLE 은 깨짐. 다 Table 로 바꿔야 가능할듯..?
+import revi1337.onsquad.common.domain.EmailContent;
 
-    void sendEmail(String subject, EmailContent content, String to);
+public interface EmailSender<T extends EmailContent> {
+
+    void sendEmail(String subject, T content, String to);
 
 }

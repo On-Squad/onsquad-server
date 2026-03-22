@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.test.util.ReflectionTestUtils;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Introduce;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
-import revi1337.onsquad.member.domain.entity.vo.PasswordPolicy;
+import revi1337.onsquad.member.domain.vo.Introduce;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.PasswordPolicy;
 
 public class MemberFixture {
 

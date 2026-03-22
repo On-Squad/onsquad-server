@@ -18,15 +18,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import revi1337.onsquad.common.domain.BaseEntity;
-import revi1337.onsquad.member.domain.entity.vo.Address;
-import revi1337.onsquad.member.domain.entity.vo.Email;
-import revi1337.onsquad.member.domain.entity.vo.Introduce;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
-import revi1337.onsquad.member.domain.entity.vo.Password;
-import revi1337.onsquad.member.domain.entity.vo.PasswordPolicy;
-import revi1337.onsquad.member.domain.entity.vo.UserType;
 import revi1337.onsquad.member.domain.model.ProfileSpec;
+import revi1337.onsquad.member.domain.vo.Address;
+import revi1337.onsquad.member.domain.vo.Email;
+import revi1337.onsquad.member.domain.vo.Introduce;
+import revi1337.onsquad.member.domain.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Password;
+import revi1337.onsquad.member.domain.vo.PasswordPolicy;
+import revi1337.onsquad.member.domain.vo.UserType;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

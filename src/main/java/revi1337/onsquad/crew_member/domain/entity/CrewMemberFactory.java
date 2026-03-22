@@ -1,8 +1,8 @@
 package revi1337.onsquad.crew_member.domain.entity;
 
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.GENERAL;
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.MANAGER;
-import static revi1337.onsquad.crew_member.domain.entity.vo.CrewRole.OWNER;
+import static revi1337.onsquad.crew_member.domain.CrewRole.GENERAL;
+import static revi1337.onsquad.crew_member.domain.CrewRole.MANAGER;
+import static revi1337.onsquad.crew_member.domain.CrewRole.OWNER;
 
 import java.time.LocalDateTime;
 import revi1337.onsquad.crew.domain.entity.Crew;

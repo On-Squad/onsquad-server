@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
 import revi1337.onsquad.crew.domain.error.CrewBusinessException;
 import revi1337.onsquad.infrastructure.aws.s3.event.FileDeleteEvent;
+import revi1337.onsquad.member.infrastructure.MemberFileStorageManager;
 
 @ExtendWith(MockitoExtension.class)
 class MemberCommandServiceFacadeTest {

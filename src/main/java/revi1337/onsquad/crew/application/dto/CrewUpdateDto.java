@@ -1,7 +1,7 @@
 package revi1337.onsquad.crew.application.dto;
 
 import java.util.List;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 public record CrewUpdateDto(
         String name,

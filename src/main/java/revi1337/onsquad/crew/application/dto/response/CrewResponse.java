@@ -6,7 +6,7 @@ import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.crew.domain.model.CrewDetail;
 import revi1337.onsquad.crew_hashtag.domain.entity.CrewHashtag;
 import revi1337.onsquad.hashtag.domain.entity.Hashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

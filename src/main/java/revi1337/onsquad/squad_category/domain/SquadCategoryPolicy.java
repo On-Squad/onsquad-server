@@ -4,7 +4,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.util.List;
 import lombok.NoArgsConstructor;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.squad_category.domain.error.SquadCategoryDomainException;
 import revi1337.onsquad.squad_category.domain.error.SquadCategoryErrorCode;
 

@@ -13,7 +13,7 @@ import revi1337.onsquad.announce.domain.model.Announces;
 import revi1337.onsquad.announce.domain.repository.AnnounceRepository;
 import revi1337.onsquad.crew_member.application.CrewMemberAccessor;
 import revi1337.onsquad.crew_member.domain.entity.CrewMember;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 import revi1337.onsquad.crew_member.domain.model.CrewMembers;
 
 @Service

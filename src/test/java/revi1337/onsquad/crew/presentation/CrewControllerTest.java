@@ -35,8 +35,8 @@ import static revi1337.onsquad.common.fixture.CrewFixture.CREW_KAKAO_LINK_VALUE;
 import static revi1337.onsquad.common.fixture.MultipartFixture.PNG_BYTES;
 import static revi1337.onsquad.common.fixture.MultipartFixture.jsonMuliPart;
 import static revi1337.onsquad.common.fixture.MultipartFixture.pngMuliPart;
-import static revi1337.onsquad.hashtag.domain.entity.vo.HashtagType.ACTIVE;
-import static revi1337.onsquad.hashtag.domain.entity.vo.HashtagType.FOODIE;
+import static revi1337.onsquad.hashtag.domain.HashtagType.ACTIVE;
+import static revi1337.onsquad.hashtag.domain.HashtagType.FOODIE;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -60,9 +60,9 @@ import revi1337.onsquad.crew.application.dto.response.CrewStates;
 import revi1337.onsquad.crew.application.dto.response.CrewWithParticipantStateResponse;
 import revi1337.onsquad.crew.presentation.request.CrewCreateRequest;
 import revi1337.onsquad.crew.presentation.request.CrewUpdateRequest;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @WebMvcTest(CrewController.class)
 class CrewControllerTest extends PresentationLayerTestSupport {

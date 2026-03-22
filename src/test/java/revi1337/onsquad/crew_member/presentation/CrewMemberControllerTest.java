@@ -41,7 +41,7 @@ import revi1337.onsquad.crew_member.application.response.CrewMemberResponse;
 import revi1337.onsquad.crew_member.application.response.CrewMemberStates;
 import revi1337.onsquad.crew_member.application.response.MyParticipantCrewResponse;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @WebMvcTest(CrewMemberController.class)
 class CrewMemberControllerTest extends PresentationLayerTestSupport {

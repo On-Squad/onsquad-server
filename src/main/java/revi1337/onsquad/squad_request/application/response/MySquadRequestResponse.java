@@ -3,7 +3,7 @@ package revi1337.onsquad.squad_request.application.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.crew.application.dto.response.SimpleCrewResponse;
 import revi1337.onsquad.squad.application.response.SimpleSquadResponse;
 import revi1337.onsquad.squad.domain.SquadLinkable;

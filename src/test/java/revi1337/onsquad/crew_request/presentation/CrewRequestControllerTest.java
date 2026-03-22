@@ -41,7 +41,7 @@ import revi1337.onsquad.crew_request.application.CrewRequestQueryService;
 import revi1337.onsquad.crew_request.application.response.CrewRequestResponse;
 import revi1337.onsquad.crew_request.application.response.CrewRequestWithCrewResponse;
 import revi1337.onsquad.member.application.dto.response.SimpleMemberResponse;
-import revi1337.onsquad.member.domain.entity.vo.Mbti;
+import revi1337.onsquad.member.domain.vo.Mbti;
 
 @WebMvcTest(CrewRequestController.class)
 class CrewRequestControllerTest extends PresentationLayerTestSupport {

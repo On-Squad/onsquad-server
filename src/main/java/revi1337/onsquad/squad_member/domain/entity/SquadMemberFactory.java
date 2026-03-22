@@ -1,7 +1,7 @@
 package revi1337.onsquad.squad_member.domain.entity;
 
-import static revi1337.onsquad.squad_member.domain.entity.vo.SquadRole.GENERAL;
-import static revi1337.onsquad.squad_member.domain.entity.vo.SquadRole.LEADER;
+import static revi1337.onsquad.squad_member.domain.SquadRole.GENERAL;
+import static revi1337.onsquad.squad_member.domain.SquadRole.LEADER;
 
 import java.time.LocalDateTime;
 import revi1337.onsquad.member.domain.entity.Member;

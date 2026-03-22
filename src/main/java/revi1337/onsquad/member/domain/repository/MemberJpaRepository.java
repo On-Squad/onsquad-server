@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Email;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Email;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 public interface MemberJpaRepository extends JpaRepository<Member, Long> {
 

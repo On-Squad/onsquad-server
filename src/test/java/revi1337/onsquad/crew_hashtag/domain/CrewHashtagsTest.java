@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import revi1337.onsquad.crew_hashtag.domain.entity.CrewHashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 class CrewHashtagsTest {
 

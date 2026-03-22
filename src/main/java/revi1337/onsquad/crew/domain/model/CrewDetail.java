@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import revi1337.onsquad.crew.domain.entity.vo.Detail;
-import revi1337.onsquad.crew.domain.entity.vo.Introduce;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.crew.domain.vo.Detail;
+import revi1337.onsquad.crew.domain.vo.Introduce;
+import revi1337.onsquad.crew.domain.vo.Name;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.domain.model.SimpleMember;
 
 @Getter

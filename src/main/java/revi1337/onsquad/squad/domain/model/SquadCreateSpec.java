@@ -2,11 +2,11 @@ package revi1337.onsquad.squad.domain.model;
 
 import java.util.List;
 import lombok.Getter;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.squad.domain.SquadPolicy;
-import revi1337.onsquad.squad.domain.entity.vo.Address;
-import revi1337.onsquad.squad.domain.entity.vo.Content;
-import revi1337.onsquad.squad.domain.entity.vo.Title;
+import revi1337.onsquad.squad.domain.vo.Address;
+import revi1337.onsquad.squad.domain.vo.Content;
+import revi1337.onsquad.squad.domain.vo.Title;
 import revi1337.onsquad.squad_category.domain.SquadCategoryPolicy;
 
 @Getter

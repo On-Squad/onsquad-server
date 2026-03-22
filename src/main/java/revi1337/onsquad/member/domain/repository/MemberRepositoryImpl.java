@@ -5,8 +5,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import revi1337.onsquad.member.domain.entity.Member;
-import revi1337.onsquad.member.domain.entity.vo.Email;
-import revi1337.onsquad.member.domain.entity.vo.Nickname;
+import revi1337.onsquad.member.domain.vo.Email;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 @Repository
 @RequiredArgsConstructor

@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)

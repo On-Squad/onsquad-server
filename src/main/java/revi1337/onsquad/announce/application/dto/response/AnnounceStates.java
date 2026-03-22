@@ -1,7 +1,7 @@
 package revi1337.onsquad.announce.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import revi1337.onsquad.crew_member.domain.entity.vo.CrewRole;
+import revi1337.onsquad.crew_member.domain.CrewRole;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AnnounceStates(

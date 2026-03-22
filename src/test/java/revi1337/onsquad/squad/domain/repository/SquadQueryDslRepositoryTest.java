@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
-import revi1337.onsquad.category.domain.entity.vo.CategoryType;
+import revi1337.onsquad.category.domain.vo.CategoryType;
 import revi1337.onsquad.common.PersistenceLayerTestSupport;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.crew.domain.repository.CrewJpaRepository;

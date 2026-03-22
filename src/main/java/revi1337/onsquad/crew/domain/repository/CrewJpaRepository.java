@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import revi1337.onsquad.crew.domain.entity.Crew;
-import revi1337.onsquad.crew.domain.entity.vo.Name;
+import revi1337.onsquad.crew.domain.vo.Name;
 
 public interface CrewJpaRepository extends JpaRepository<Crew, Long> {
 

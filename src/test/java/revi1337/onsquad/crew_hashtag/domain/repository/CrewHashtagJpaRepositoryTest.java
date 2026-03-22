@@ -14,7 +14,7 @@ import revi1337.onsquad.common.PersistenceLayerTestSupport;
 import revi1337.onsquad.crew.domain.entity.Crew;
 import revi1337.onsquad.crew.domain.repository.CrewJpaRepository;
 import revi1337.onsquad.crew_hashtag.domain.entity.CrewHashtag;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.domain.entity.Member;
 import revi1337.onsquad.member.domain.repository.MemberJpaRepository;
 

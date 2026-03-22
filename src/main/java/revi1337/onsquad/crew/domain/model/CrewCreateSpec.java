@@ -3,7 +3,7 @@ package revi1337.onsquad.crew.domain.model;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import revi1337.onsquad.hashtag.domain.entity.vo.HashtagType;
+import revi1337.onsquad.hashtag.domain.HashtagType;
 import revi1337.onsquad.member.domain.entity.Member;
 
 @Getter
