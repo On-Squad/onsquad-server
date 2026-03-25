@@ -15,7 +15,7 @@ public class MySqlTestContainerInitializer implements ApplicationContextInitiali
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MySqlTestContainerInitializer.class);
     private static final MySQLContainer<?> MYSQL = new MySQLContainer<>(DockerImageName.parse("mysql:8.0"))
-            .withCommand("--lower_case_table_names=1")
+            .withCommand("--lower_case_table_names=1", "--innodb_redo_log_capacity=1G")
             .withReuse(true)
             .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("testcontainers.mysql")));
 

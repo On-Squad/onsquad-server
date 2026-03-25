@@ -1,5 +1,6 @@
 package revi1337.onsquad.crew_member.application.leaderboard;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -47,7 +48,7 @@ class CrewLeaderboardSnapshotManagerTest {
     }
 
     @Test
-    @DisplayName("기존 리더보드 키가 스냅샷 키로 이름이 변경되어 격리된다")
+    @DisplayName("[Redis Lua + RENAME 기반] 기존 리더보드 키가 스냅샷 키로 이름이 변경되어 격리된다")
     void captureSnapshots() {
         Long crewId = 1L;
         List<Long> memberIds = List.of(1L, 2L, 3L);
@@ -55,6 +56,7 @@ class CrewLeaderboardSnapshotManagerTest {
         leaderboardManager.applyActivity(crewId, memberIds.get(0), baseTime, CrewActivity.CREW_PARTICIPANT);
         leaderboardManager.applyActivity(crewId, memberIds.get(1), baseTime.plusSeconds(10), CrewActivity.SQUAD_CREATE);
         leaderboardManager.applyActivity(crewId, memberIds.get(2), baseTime.plusSeconds(10), CrewActivity.SQUAD_COMMENT);
+        assertThat(stringRedisTemplate.hasKey(CrewLeaderboardKeyMapper.toLeaderboardKey(crewId))).isTrue();
 
         List<String> snapshotKeys = leaderboardSnapshotManager.captureSnapshots();
 
@@ -74,6 +76,7 @@ class CrewLeaderboardSnapshotManagerTest {
         leaderboardManager.applyActivity(crewId, memberIds.get(0), baseTime.plusSeconds(10), CrewActivity.SQUAD_COMMENT);
         leaderboardManager.applyActivity(crewId, memberIds.get(1), baseTime.plusSeconds(20), CrewActivity.SQUAD_COMMENT);
         leaderboardManager.applyActivity(crewId, memberIds.get(2), baseTime.plusSeconds(40), CrewActivity.SQUAD_CREATE);
+        assertThat(stringRedisTemplate.hasKey(CrewLeaderboardKeyMapper.toLeaderboardKey(crewId))).isTrue();
         leaderboardSnapshotManager.captureSnapshots();
 
         CrewLeaderboards snapshots = leaderboardSnapshotManager.getSnapshots(List.of(crewId), 3);
@@ -100,6 +103,9 @@ class CrewLeaderboardSnapshotManagerTest {
         leaderboardManager.applyActivity(crewIds.get(0), memberIds.get(0), baseTime.plusSeconds(10), CrewActivity.SQUAD_COMMENT);
         leaderboardManager.applyActivity(crewIds.get(1), memberIds.get(1), baseTime.plusSeconds(20), CrewActivity.SQUAD_COMMENT);
         leaderboardManager.applyActivity(crewIds.get(2), memberIds.get(2), baseTime.plusSeconds(40), CrewActivity.SQUAD_CREATE);
+        assertThat(stringRedisTemplate.hasKey(CrewLeaderboardKeyMapper.toLeaderboardKey(crewIds.get(0)))).isTrue();
+        assertThat(stringRedisTemplate.hasKey(CrewLeaderboardKeyMapper.toLeaderboardKey(crewIds.get(1)))).isTrue();
+        assertThat(stringRedisTemplate.hasKey(CrewLeaderboardKeyMapper.toLeaderboardKey(crewIds.get(2)))).isTrue();
         leaderboardSnapshotManager.captureSnapshots();
 
         leaderboardSnapshotManager.removeSnapshots(crewIds);

@@ -13,6 +13,11 @@ public class RankerProfile {
         this.mbti = mbti;
     }
 
+    public RankerProfile(Nickname nickname, String mbti) {
+        this.nickname = nickname;
+        this.mbti = mbti != null ? Mbti.parse(mbti) : null;
+    }
+
     public String getNickname() {
         return nickname.getValue();
     }

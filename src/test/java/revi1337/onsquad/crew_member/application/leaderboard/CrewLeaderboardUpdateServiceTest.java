@@ -22,10 +22,16 @@ import org.springframework.test.context.jdbc.Sql;
 import revi1337.onsquad.common.config.ApplicationLayerConfiguration;
 import revi1337.onsquad.common.container.MySqlTestContainerInitializer;
 import revi1337.onsquad.common.container.RedisTestContainerInitializer;
+import revi1337.onsquad.common.fixture.CrewFixture;
+import revi1337.onsquad.crew.domain.entity.Crew;
+import revi1337.onsquad.crew.domain.repository.CrewJpaRepository;
+import revi1337.onsquad.crew_member.domain.entity.CrewMember;
+import revi1337.onsquad.crew_member.domain.entity.CrewMemberFactory;
 import revi1337.onsquad.crew_member.domain.entity.CrewRanker;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboard;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboards;
 import revi1337.onsquad.crew_member.domain.model.CrewRankerCandidate;
+import revi1337.onsquad.crew_member.domain.repository.CrewMemberJpaRepository;
 import revi1337.onsquad.crew_member.domain.repository.rank.CrewRankerJdbcRepository;
 import revi1337.onsquad.crew_member.domain.repository.rank.CrewRankerJpaRepository;
 import revi1337.onsquad.member.domain.entity.Member;
@@ -33,10 +39,7 @@ import revi1337.onsquad.member.domain.repository.MemberJpaRepository;
 
 @Sql("/mysql-truncate.sql")
 @Import({ApplicationLayerConfiguration.class})
-@ContextConfiguration(initializers = {
-        MySqlTestContainerInitializer.class,
-        RedisTestContainerInitializer.class
-})
+@ContextConfiguration(initializers = {MySqlTestContainerInitializer.class, RedisTestContainerInitializer.class})
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class CrewLeaderboardUpdateServiceTest {
 
@@ -45,6 +48,12 @@ class CrewLeaderboardUpdateServiceTest {
 
     @Autowired
     private MemberJpaRepository memberJpaRepository;
+
+    @Autowired
+    private CrewJpaRepository crewJpaRepository;
+
+    @Autowired
+    private CrewMemberJpaRepository crewMemberJpaRepository;
 
     @Autowired
     private CrewRankerJpaRepository rankerJpaRepository;
@@ -75,6 +84,16 @@ class CrewLeaderboardUpdateServiceTest {
         Member member6 = createMember(6);
         Member member7 = createMember(7);
         memberJpaRepository.saveAll(List.of(member1, member2, member3, member4, member5, member6, member7));
+        Crew crew = CrewFixture.createCrew(member1);
+        crew.addCrewMember(
+                createGeneralCrewMember(crew, member2),
+                createGeneralCrewMember(crew, member3),
+                createGeneralCrewMember(crew, member4),
+                createGeneralCrewMember(crew, member5),
+                createGeneralCrewMember(crew, member6),
+                createGeneralCrewMember(crew, member7)
+        );
+        crewJpaRepository.save(crew);
         rankerJdbcRepository.insertBatch(List.of(
                 createCrewRankerCandidate(1L, 1, 200, member1),
                 createCrewRankerCandidate(1L, 2, 100, member2)
@@ -119,6 +138,16 @@ class CrewLeaderboardUpdateServiceTest {
         Member member6 = createMember(6);
         Member member7 = createMember(7);
         memberJpaRepository.saveAll(List.of(member1, member2, member3, member4, member5, member6, member7));
+        Crew crew = CrewFixture.createCrew(member1);
+        crew.addCrewMember(
+                createGeneralCrewMember(crew, member2),
+                createGeneralCrewMember(crew, member3),
+                createGeneralCrewMember(crew, member4),
+                createGeneralCrewMember(crew, member5),
+                createGeneralCrewMember(crew, member6),
+                createGeneralCrewMember(crew, member7)
+        );
+        crewJpaRepository.save(crew);
         rankerJdbcRepository.insertBatch(List.of(
                 createCrewRankerCandidate(1L, 1, 200, member1),
                 createCrewRankerCandidate(1L, 2, 100, member2)
@@ -163,13 +192,23 @@ class CrewLeaderboardUpdateServiceTest {
         Member member6 = createMember(6);
         Member member7 = createMember(7);
         memberJpaRepository.saveAll(List.of(member1, member2, member3, member4, member5, member6, member7));
+        Crew crew = CrewFixture.createCrew(member1);
+        crew.addCrewMember(
+                createGeneralCrewMember(crew, member2),
+                createGeneralCrewMember(crew, member3),
+                createGeneralCrewMember(crew, member4),
+                createGeneralCrewMember(crew, member5),
+                createGeneralCrewMember(crew, member6),
+                createGeneralCrewMember(crew, member7)
+        );
+        crewJpaRepository.save(crew);
         rankerJdbcRepository.insertBatch(List.of(
                 createCrewRankerCandidate(1L, 1, 200, member1),
                 createCrewRankerCandidate(1L, 2, 100, member2)
         ));
-        memberJpaRepository.deleteById(member7.getId());
-        memberJpaRepository.deleteById(member6.getId());
-        memberJpaRepository.deleteById(member5.getId());
+        crewMemberJpaRepository.deleteByCrewIdAndMemberId(crew.getId(), member7.getId());
+        crewMemberJpaRepository.deleteByCrewIdAndMemberId(crew.getId(), member6.getId());
+        crewMemberJpaRepository.deleteByCrewIdAndMemberId(crew.getId(), member5.getId());
 
         LocalDateTime baseTime = LocalDate.of(2026, 1, 4).atStartOfDay();
         CrewRankerCandidate candidate1 = createCrewRankerCandidate(1L, 1, 9, member7, baseTime.plusDays(3));
@@ -196,6 +235,10 @@ class CrewLeaderboardUpdateServiceTest {
             softly.assertThat(rankers).extracting(CrewRanker::getNickname)
                     .containsExactlyInAnyOrder("nick4", "nick3", "nick2", "nick1");
         });
+    }
+
+    private static CrewMember createGeneralCrewMember(Crew crew, Member member) {
+        return CrewMemberFactory.general(crew, member, LocalDateTime.now());
     }
 
     private static CrewRankerCandidate createCrewRankerCandidate(Long crewId, int rank, long score, Member member) {

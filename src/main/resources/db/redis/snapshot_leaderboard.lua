@@ -11,7 +11,7 @@ repeat
     local keys = result[2]
 
     for _, key in ipairs(keys) do
-        if not string.find(key, ARGV[2] .. "$") then
+        if not string.find(key, ARGV[3] .. "$") then
             local snapshot_key = key .. ARGV[3]
             redis.call('RENAME', key, snapshot_key)
             table.insert(moved_keys, snapshot_key)

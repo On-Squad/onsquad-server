@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import revi1337.onsquad.crew_member.domain.entity.CrewMember;
 
 public interface CrewMemberJpaRepository extends JpaRepository<CrewMember, Long>, CrewMemberQueryRepository {
@@ -23,4 +24,10 @@ public interface CrewMemberJpaRepository extends JpaRepository<CrewMember, Long>
     @Modifying
     @Query("delete CrewMember cm where cm.crew.id in :crewIds")
     int deleteByCrewIdIn(List<Long> crewIds);
+
+    @Transactional
+    @Modifying
+    @Query("delete CrewMember cm where cm.crew.id = :crewId and cm.member.id = :memberId")
+    int deleteByCrewIdAndMemberId(Long crewId, Long memberId);
+    
 }

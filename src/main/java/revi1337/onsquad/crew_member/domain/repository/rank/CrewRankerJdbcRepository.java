@@ -1,7 +1,10 @@
 package revi1337.onsquad.crew_member.domain.repository.rank;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -9,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import revi1337.onsquad.crew_member.domain.model.CrewRankerCandidate;
+import revi1337.onsquad.crew_member.domain.model.RankerProfile;
+import revi1337.onsquad.member.domain.vo.Nickname;
 
 @Repository
 @RequiredArgsConstructor
@@ -201,6 +206,29 @@ public class CrewRankerJdbcRepository {
                 .addValue("rankLimit", rankLimit);
 
         return namedJdbcTemplate.query(sql, sqlParameterSource, crewRankerCandidateMapper());
+    }
+
+    public Map<Long, RankerProfile> findActiveRankersWithProfile(List<CrewRankerCandidate> candidates) {
+        String inClause = candidates.stream()
+                .map(r -> "(" + r.crewId() + "," + r.memberId() + ")")
+                .collect(Collectors.joining(","));
+
+        String sql = """
+                SELECT m.id as member_id, m.nickname, m.mbti \
+                FROM crew_member cm \
+                INNER JOIN member m ON cm.member_id = m.id \
+                WHERE (cm.crew_id, cm.member_id) IN (%s) \
+                """.formatted(inClause);
+
+        return namedJdbcTemplate.query(sql, rs -> {
+            Map<Long, RankerProfile> result = new HashMap<>(candidates.size());
+            while (rs.next()) {
+                result.put(rs.getLong("member_id"), new RankerProfile(
+                        new Nickname(rs.getString("nickname")), rs.getString("mbti"))
+                );
+            }
+            return result;
+        });
     }
 
     private RowMapper<CrewRankerCandidate> crewRankerCandidateMapper() {

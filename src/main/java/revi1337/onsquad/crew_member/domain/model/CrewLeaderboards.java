@@ -3,6 +3,7 @@ package revi1337.onsquad.crew_member.domain.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class CrewLeaderboards {
 
@@ -22,6 +23,10 @@ public class CrewLeaderboards {
 
     public int size() {
         return leaderboards.size();
+    }
+
+    public Stream<CrewLeaderboard> leaderboardStream() {
+        return leaderboards.values().stream();
     }
 
     public CrewLeaderboard getLeaderboard(Long crewId) {

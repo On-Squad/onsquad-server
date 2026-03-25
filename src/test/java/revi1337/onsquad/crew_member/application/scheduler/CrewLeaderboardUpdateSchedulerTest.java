@@ -22,8 +22,13 @@ import org.springframework.test.context.jdbc.Sql;
 import revi1337.onsquad.common.config.ApplicationLayerConfiguration;
 import revi1337.onsquad.common.container.MySqlTestContainerInitializer;
 import revi1337.onsquad.common.container.RedisTestContainerInitializer;
+import revi1337.onsquad.common.fixture.CrewFixture;
+import revi1337.onsquad.crew.domain.entity.Crew;
+import revi1337.onsquad.crew.domain.repository.CrewJpaRepository;
 import revi1337.onsquad.crew_member.application.leaderboard.CompositeScore;
 import revi1337.onsquad.crew_member.application.leaderboard.CrewLeaderboardManager;
+import revi1337.onsquad.crew_member.domain.entity.CrewMember;
+import revi1337.onsquad.crew_member.domain.entity.CrewMemberFactory;
 import revi1337.onsquad.crew_member.domain.entity.CrewRanker;
 import revi1337.onsquad.crew_member.domain.model.CrewActivity;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboards;
@@ -34,15 +39,15 @@ import revi1337.onsquad.member.domain.repository.MemberJpaRepository;
 
 @Sql("/mysql-truncate.sql")
 @Import({ApplicationLayerConfiguration.class})
-@ContextConfiguration(initializers = {
-        MySqlTestContainerInitializer.class,
-        RedisTestContainerInitializer.class,
-})
+@ContextConfiguration(initializers = {MySqlTestContainerInitializer.class, RedisTestContainerInitializer.class})
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class CrewLeaderboardUpdateSchedulerTest {
 
     @Autowired
     private MemberJpaRepository memberRepository;
+
+    @Autowired
+    private CrewJpaRepository crewJpaRepository;
 
     @Autowired
     private CrewRankerRepository crewRankerRepository;
@@ -72,6 +77,9 @@ class CrewLeaderboardUpdateSchedulerTest {
         Member andong = createAndong();
         Member kwangwon = createKwangwon();
         memberRepository.saveAll(List.of(revi, andong, kwangwon));
+        Crew crew = CrewFixture.createCrew(revi);
+        crew.addCrewMember(createGeneralCrewMember(crew, andong), createGeneralCrewMember(crew, kwangwon));
+        crewJpaRepository.save(crew);
         CrewRankerCandidate candidate1 = createCrewRankerCandidate(1L, 1, 1, revi);
         CrewRankerCandidate candidate2 = createCrewRankerCandidate(1L, 2, 1, andong);
         crewRankerRepository.insertBatch(List.of(candidate1, candidate2));
@@ -95,6 +103,10 @@ class CrewLeaderboardUpdateSchedulerTest {
             CrewLeaderboards leaderboards = leaderboardManager.getAllLeaderboards(-1);
             softly.assertThat(leaderboards.isEmpty()).isTrue();
         });
+    }
+
+    private static CrewMember createGeneralCrewMember(Crew crew, Member member) {
+        return CrewMemberFactory.general(crew, member, LocalDateTime.now());
     }
 
     private static CrewRankerCandidate createCrewRankerCandidate(Long crewId, int rank, long score, Member member) {
