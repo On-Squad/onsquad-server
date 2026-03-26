@@ -2,17 +2,13 @@ package revi1337.onsquad.crew_member.application.leaderboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 import revi1337.onsquad.crew_member.config.CrewLeaderboardProperties;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboard;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboards;
@@ -25,15 +21,19 @@ import revi1337.onsquad.crew_member.domain.repository.rank.CrewRankerJdbcReposit
 @RequiredArgsConstructor
 public class CrewLeaderboardUpdateService {
 
+    private static final int QUERY_BATCH_SIZE = 5000;
+    private static final int SINGLE_QUERY_THRESHOLD = 100_000;
+    private static final int PARALLEL_STRATEGY_THRESHOLD = 500_000;
+
+    private final Executor leaderboardProfileExecutor;
     private final CrewRankerJdbcRepository crewRankerJdbcRepository;
     private final CrewLeaderboardProperties leaderboardProperties;
-    private final TransactionTemplate transactionTemplate;
 
     public void updateLeaderboards(CrewLeaderboards leaderboards) {
         try {
             crewRankerJdbcRepository.dropShadowTable();
             crewRankerJdbcRepository.prepareShadowTable();
-            List<CrewRankerCandidate> rankers = selectRankers_4(leaderboards);
+            List<CrewRankerCandidate> rankers = selectRankers(leaderboards);
             crewRankerJdbcRepository.insertBatchToShadowTable(rankers);
             crewRankerJdbcRepository.switchTables();
             log.info("[LeaderboardUpdate] swap successful. New leaderboard is now live. ({} rankers)", rankers.size());
@@ -44,101 +44,53 @@ public class CrewLeaderboardUpdateService {
     }
 
     private List<CrewRankerCandidate> selectRankers(CrewLeaderboards leaderboards) {
-        List<CrewRankerCandidate> rankers = leaderboards.leaderboardStream()
+        List<CrewRankerCandidate> rankerCandidates = leaderboards.leaderboardStream()
                 .flatMap(CrewLeaderboard::candidateStream)
                 .toList();
 
-        Map<Long, RankerProfile> memberMapping = crewRankerJdbcRepository.findActiveRankersWithProfile(rankers);
-
-        return leaderboards.selectRankers(leaderboardProperties.rankLimit(), memberMapping);
-    }
-
-    private List<CrewRankerCandidate> selectRankers_1(CrewLeaderboards leaderboards) {
-        Iterator<CrewRankerCandidate> iterator = leaderboards.leaderboardStream()
-                .flatMap(CrewLeaderboard::candidateStream)
-                .iterator();
-
-        int batchSize = 5000;
-        Map<Long, RankerProfile> memberMapping = new HashMap<>();
-        while (iterator.hasNext()) {
-            List<CrewRankerCandidate> chunk = new ArrayList<>(batchSize);
-            for (int i = 0; i < batchSize && iterator.hasNext(); i++) {
-                chunk.add(iterator.next());
-            }
-            memberMapping.putAll(crewRankerJdbcRepository.findActiveRankersWithProfile(chunk));
-        }
-
-        return leaderboards.selectRankers(leaderboardProperties.rankLimit(), memberMapping);
-    }
-
-    private List<CrewRankerCandidate> selectRankers_2(CrewLeaderboards leaderboards) {
-        Iterator<CrewRankerCandidate> iterator = leaderboards.leaderboardStream()
-                .flatMap(CrewLeaderboard::candidateStream)
-                .iterator();
-
-        int batchSize = 5000;
-        int threadCount = 6;
-        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-        List<Future<Map<Long, RankerProfile>>> futures = new ArrayList<>();
-        while (iterator.hasNext()) {
-            List<CrewRankerCandidate> chunk = new ArrayList<>(batchSize);
-            for (int i = 0; i < batchSize && iterator.hasNext(); i++) {
-                chunk.add(iterator.next());
-            }
-            CompletableFuture<Map<Long, RankerProfile>> future = CompletableFuture.supplyAsync(
-                    () -> crewRankerJdbcRepository.findActiveRankersWithProfile(chunk), pool);
-            futures.add(future);
-        }
-
-        Map<Long, RankerProfile> memberMapping = new HashMap<>((int) (leaderboards.getAllRankerIds().size() / 0.75f) + 1);
-        for (Future<Map<Long, RankerProfile>> future : futures) {
-            try {
-                memberMapping.putAll(future.get());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        int totalSize = rankerCandidates.size();
+        Map<Long, RankerProfile> memberMapping;
+        if (totalSize <= SINGLE_QUERY_THRESHOLD) {
+            memberMapping = crewRankerJdbcRepository.findActiveRankersWithProfile(rankerCandidates);
+        } else {
+            memberMapping = new HashMap<>((int) (leaderboards.getAllRankerIds().size() / 0.75f) + 1);
+            if (totalSize <= PARALLEL_STRATEGY_THRESHOLD) {
+                fetchProfilesSequentially(rankerCandidates, memberMapping);
+            } else {
+                fetchProfilesInParallel(rankerCandidates, memberMapping);
             }
         }
-        pool.shutdown();
 
         return leaderboards.selectRankers(leaderboardProperties.rankLimit(), memberMapping);
     }
 
-    private List<CrewRankerCandidate> selectRankers_3(CrewLeaderboards leaderboards) {
-        List<CrewRankerCandidate> rankers = leaderboards.leaderboardStream()
-                .flatMap(CrewLeaderboard::candidateStream)
-                .toList();
-
-        Map<Long, RankerProfile> memberMapping = transactionTemplate.execute(status -> crewRankerJdbcRepository.findActiveRankersWithProfile3(rankers));
-
-        return leaderboards.selectRankers(leaderboardProperties.rankLimit(), memberMapping);
+    private void fetchProfilesSequentially(List<CrewRankerCandidate> candidates, Map<Long, RankerProfile> targetMap) {
+        for (int i = 0; i < candidates.size(); i += QUERY_BATCH_SIZE) {
+            List<CrewRankerCandidate> chunk = createChunk(candidates, i);
+            targetMap.putAll(crewRankerJdbcRepository.findActiveRankersWithProfile(chunk));
+        }
     }
 
-    private List<CrewRankerCandidate> selectRankers_4(CrewLeaderboards leaderboards) {
-        Iterator<CrewRankerCandidate> iterator = leaderboards.leaderboardStream()
-                .flatMap(CrewLeaderboard::candidateStream)
-                .iterator();
-
-        crewRankerJdbcRepository.prepareTempTable();
-
-        int batchSize = 10000;
-        int threadCount = 6;
-        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        while (iterator.hasNext()) {
-            List<CrewRankerCandidate> chunk = new ArrayList<>(batchSize);
-            for (int i = 0; i < batchSize && iterator.hasNext(); i++) {
-                chunk.add(iterator.next());
-            }
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> crewRankerJdbcRepository.insertBatchToTempTable(chunk), pool);
+    private void fetchProfilesInParallel(List<CrewRankerCandidate> candidates, Map<Long, RankerProfile> targetMap) {
+        List<CompletableFuture<Map<Long, RankerProfile>>> futures = new ArrayList<>();
+        for (int i = 0; i < candidates.size(); i += QUERY_BATCH_SIZE) {
+            int start = i;
+            CompletableFuture<Map<Long, RankerProfile>> future = CompletableFuture.supplyAsync(() -> {
+                List<CrewRankerCandidate> chunk = createChunk(candidates, start);
+                return crewRankerJdbcRepository.findActiveRankersWithProfile(chunk);
+            }, leaderboardProfileExecutor);
             futures.add(future);
         }
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        pool.shutdown();
+        futures.forEach(f -> targetMap.putAll(f.join()));
+    }
 
-        crewRankerJdbcRepository.createPrimaryKeyInTempTable();
-        Map<Long, RankerProfile> memberMapping = crewRankerJdbcRepository
-                .findActiveRankersWithProfileInTempTable((int) (leaderboards.getAllRankerIds().size() / 0.75f) + 1);
-
-        return leaderboards.selectRankers(leaderboardProperties.rankLimit(), memberMapping);
+    private List<CrewRankerCandidate> createChunk(List<CrewRankerCandidate> rankers, int start) {
+        int end = Math.min(start + QUERY_BATCH_SIZE, rankers.size());
+        List<CrewRankerCandidate> chunk = new ArrayList<>(end - start);
+        for (int i = start; i < end; i++) {
+            chunk.add(rankers.get(i));
+        }
+        return chunk;
     }
 }

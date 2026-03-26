@@ -1,15 +1,11 @@
 package revi1337.onsquad.crew_member.domain.repository.rank;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -225,117 +221,7 @@ public class CrewRankerJdbcRepository {
                 """.formatted(inClause);
 
         return namedJdbcTemplate.query(sql, rs -> {
-            Map<Long, RankerProfile> result = new HashMap<>(candidates.size());
-            while (rs.next()) {
-                result.put(rs.getLong("member_id"), new RankerProfile(
-                        new Nickname(rs.getString("nickname")), rs.getString("mbti"))
-                );
-            }
-            return result;
-        });
-    }
-
-    public Map<Long, RankerProfile> findActiveRankersWithProfile2(List<CrewRankerCandidate> candidates) {
-        String valuesClause = candidates.stream()
-                .map(r -> "ROW(" + r.crewId() + "," + r.memberId() + ")")
-                .collect(Collectors.joining(","));
-
-        String sql = """
-                SELECT m.id AS member_id, m.nickname, m.mbti \
-                FROM (VALUES %s) AS target(c_id, m_id) \
-                INNER JOIN crew_member cm ON cm.crew_id = target.c_id AND cm.member_id = target.m_id \
-                INNER JOIN member m ON m.id = cm.member_id \
-                """.formatted(valuesClause);
-
-        return namedJdbcTemplate.query(sql, rs -> {
-            Map<Long, RankerProfile> result = new HashMap<>(candidates.size());
-            while (rs.next()) {
-                result.put(rs.getLong("member_id"), new RankerProfile(
-                        new Nickname(rs.getString("nickname")), rs.getString("mbti")));
-            }
-            return result;
-        });
-    }
-
-    public Map<Long, RankerProfile> findActiveRankersWithProfile3(List<CrewRankerCandidate> candidates) {
-        return namedJdbcTemplate.getJdbcOperations().execute((ConnectionCallback<Map<Long, RankerProfile>>) conn -> {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute("""
-                            CREATE TEMPORARY TABLE tmp_ranker (
-                                crew_id BIGINT,
-                                member_id BIGINT,
-                                PRIMARY KEY (crew_id, member_id)
-                            )
-                        """);
-            }
-
-            try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tmp_ranker (crew_id, member_id) VALUES (?, ?)")) {
-                for (CrewRankerCandidate candidate : candidates) {
-                    pstmt.setLong(1, candidate.crewId());
-                    pstmt.setLong(2, candidate.memberId());
-                    pstmt.addBatch();
-                }
-                pstmt.executeBatch();
-            }
-
-            Map<Long, RankerProfile> result = new HashMap<>(candidates.size());
-            try (PreparedStatement ps = conn.prepareStatement("""
-                    SELECT m.id as member_id, m.nickname, m.mbti
-                    FROM tmp_ranker t
-                    JOIN crew_member cm ON cm.crew_id = t.crew_id AND cm.member_id = t.member_id
-                    JOIN member m ON m.id = cm.member_id
-                    """)) {
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        result.put(rs.getLong("member_id"), new RankerProfile(
-                                new Nickname(rs.getString("nickname")), rs.getString("mbti"))
-                        );
-                    }
-                }
-            }
-
-            return result;
-        });
-    }
-
-    public void prepareTempTable() {
-        namedJdbcTemplate.getJdbcOperations().execute("DROP TABLE IF EXISTS tmp_ranker");
-        namedJdbcTemplate.getJdbcOperations().execute("""
-                    CREATE TABLE IF NOT EXISTS tmp_ranker (
-                        crew_id BIGINT,
-                        member_id BIGINT
-                    )
-                """);
-    }
-
-    public void insertBatchToTempTable(List<CrewRankerCandidate> candidates) {
-        String sql = "INSERT INTO tmp_ranker(crew_id, member_id) VALUES (?, ?)";
-        namedJdbcTemplate.getJdbcOperations().batchUpdate(
-                sql,
-                candidates,
-                candidates.size(),
-                (ps, candidate) -> {
-                    ps.setLong(1, candidate.crewId());
-                    ps.setLong(2, candidate.memberId());
-                }
-        );
-    }
-
-    public void createPrimaryKeyInTempTable() {
-        namedJdbcTemplate.getJdbcOperations().execute("ALTER TABLE tmp_ranker ADD PRIMARY KEY (crew_id, member_id)");
-    }
-
-    public Map<Long, RankerProfile> findActiveRankersWithProfileInTempTable(int initSize) {
-        String sql = """
-                SELECT m.id as member_id, m.nickname, m.mbti \
-                FROM tmp_ranker t \
-                JOIN crew_member cm ON cm.crew_id = t.crew_id AND cm.member_id = t.member_id \
-                JOIN member m ON m.id = cm.member_id \
-                """;
-
-        return namedJdbcTemplate.query(sql, rs -> {
-            Map<Long, RankerProfile> result = new HashMap<>(initSize);
+            Map<Long, RankerProfile> result = new HashMap<>((int) (candidates.size() / 0.75f) + 1);
             while (rs.next()) {
                 result.put(rs.getLong("member_id"), new RankerProfile(
                         new Nickname(rs.getString("nickname")), rs.getString("mbti"))

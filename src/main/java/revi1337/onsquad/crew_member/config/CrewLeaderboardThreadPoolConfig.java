@@ -22,4 +22,18 @@ public class CrewLeaderboardThreadPoolConfig {
         taskExecutor.initialize();
         return taskExecutor;
     }
+
+    @Bean(name = "leaderboardProfileExecutor")
+    public Executor leaderboardProfileExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setThreadNamePrefix("profile-");
+        taskExecutor.setCorePoolSize(0);
+        taskExecutor.setMaxPoolSize(6);
+        taskExecutor.setQueueCapacity(300);
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+        taskExecutor.setAwaitTerminationSeconds(15);
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
 }

@@ -136,13 +136,9 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
     class performance {
 
         @Test
-        @DisplayName("운영 중인 테이블에 대규모 데이터(10만개)를 직접 갱신(쓰기)할 떄의 성능 측정")
+        @DisplayName("운영 중인 테이블에 대규모 데이터(10만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [741ms]")
         void success1() {
-            // selectRankers: 760ms
-            // selectRankers_1: 1007ms
-            // selectRankers_2: 1433ms
-            // selectRankers_3: 596ms
-            // selectRankers_4: 1049ms
+            // given
             int memberCount = 100;
             int crewCount = 1000;
             List<Member> members = setupInitialMembers(memberCount);
@@ -165,13 +161,34 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
         }
 
         @Test
-        @DisplayName("운영 중인 테이블에 대규모 데이터(100만개)를 직접 갱신(쓰기)할 떄의 성능 측정")
+        @DisplayName("운영 중인 테이블에 대규모 데이터(50만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [1960ms]")
         void success2() {
-            // selectRankers: PacketTooBigException
-            // selectRankers_1: (3479ms, 3537ms, 4543ms)
-            // selectRankers_2: (2084ms, 2074ms, 2820ms)
-            // selectRankers_3: 6626ms
-            // selectRankers_4: 7282ms <-...?
+            // given
+            int memberCount = 100;
+            int crewCount = 5000;
+            List<Member> members = setupInitialMembers(memberCount);
+            List<Crew> crews = setupInitialCrews(crewCount, members);
+            setupInitialCrewMembers(crews, members);
+            setupPreviousWeekRankers(crewCount, members);
+            setupMassiveLeaderboardData(crewCount, members);
+
+            // when
+            long totalTime = stopWatch(() -> leaderboardRefreshScheduler.updateLeaderboards());
+
+            // then
+            assertSoftly(softly -> {
+                System.out.println("totalTime: " + totalTime + "ms");
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM crew_ranker", Integer.class))
+                        .isEqualTo(5 * crewCount);
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT score FROM crew_ranker LIMIT 1", Long.class))
+                        .isEqualTo(CrewActivity.CREW_PARTICIPANT.getScore());
+            });
+        }
+
+        @Test
+        @DisplayName("운영 중인 테이블에 대규모 데이터(100만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [3751ms]")
+        void success3() {
+            // given
             int memberCount = 100;
             int crewCount = 10_000;
             List<Member> members = setupInitialMembers(memberCount);
