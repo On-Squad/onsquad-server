@@ -1,5 +1,6 @@
 package revi1337.onsquad.crew_member.application.leaderboard;
 
+import io.lettuce.core.RedisException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboard;
 import revi1337.onsquad.crew_member.domain.model.CrewLeaderboards;
@@ -32,15 +34,19 @@ public class CrewLeaderboardSnapshotManager {
     private final StringRedisTemplate stringRedisTemplate;
 
     public List<String> captureSnapshots() {
-        List<String> snapshotKeys = stringRedisTemplate.execute(
-                APPLY_SNAPSHOT_SCRIPT,
-                Collections.emptyList(),
-                CrewLeaderboardKeyMapper.getLeaderboardPattern(),
-                String.valueOf(ScanSize.DEFAULT.getCount()),
-                CrewLeaderboardKeyMapper.LEADERBOARD_SNAPSHOT_POSTFIX
-        );
-
-        return snapshotKeys != null ? snapshotKeys : Collections.emptyList();
+        try {
+            List<String> snapshotKeys = stringRedisTemplate.execute(
+                    APPLY_SNAPSHOT_SCRIPT,
+                    Collections.emptyList(),
+                    CrewLeaderboardKeyMapper.getLeaderboardPattern(),
+                    String.valueOf(ScanSize.DEFAULT.getCount()),
+                    CrewLeaderboardKeyMapper.LEADERBOARD_SNAPSHOT_POSTFIX
+            );
+            return snapshotKeys != null ? snapshotKeys : Collections.emptyList();
+        } catch (RedisException exception) {
+            log.error("[Leaderboard-Snapshot] Critical failure during Lua script execution.", exception);
+            throw exception;
+        }
     }
 
     public CrewLeaderboards getSnapshots(List<Long> crewIds, int rankLimitInclusive) {
@@ -50,16 +56,20 @@ public class CrewLeaderboardSnapshotManager {
         }
 
         ZSetRange range = RedisDataStructureUtils.toZSetRange(1, rankLimitInclusive);
+        RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
         List<Object> pipelinedResults = stringRedisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            computedKeys.stream()
-                    .map(computedKey -> stringRedisTemplate.getStringSerializer().serialize(computedKey))
-                    .forEach(serializedKey -> connection.zSetCommands().zRevRangeWithScores(serializedKey, range.start(), range.end()));
+            for (String computedKey : computedKeys) {
+                byte[] serializedKey = serializer.serialize(computedKey);
+                if (serializedKey != null) {
+                    connection.zSetCommands().zRevRangeWithScores(serializedKey, range.start(), range.end());
+                }
+            }
             return null;
         });
 
         Map<Long, CrewLeaderboard> leaderboards = new HashMap<>();
         for (int i = 0; i < computedKeys.size(); i++) {
-            if (!(pipelinedResults.get(i) instanceof Set<?> rawSet)) {
+            if (!(pipelinedResults.get(i) instanceof Set<?> rawSet) || rawSet.isEmpty()) {
                 continue;
             }
             Long crewId = CrewLeaderboardKeyMapper.parseCrewIdFromKey(computedKeys.get(i));

@@ -29,6 +29,11 @@ public class LeaderboardRefreshFailNotificationProvider {
     private final ObjectMapper defaultObjectMapper;
     private final OnsquadProperties onsquadProperties;
 
+    public void sendSnapshotCaptureFailAlert(String keyPattern) {
+        DiscordMessage message = createCaptureFailDiscordMessage(keyPattern);
+        leaderboardDiscordNotificationClient.sendNotification(message);
+    }
+
     public void sendLeaderboardUpdateFailAlert(List<String> snapshotKeys) {
         DiscordMessage message = createDiscordMessage(snapshotKeys);
         try {
@@ -40,9 +45,49 @@ public class LeaderboardRefreshFailNotificationProvider {
         }
     }
 
+    private DiscordMessage createCaptureFailDiscordMessage(String pattern) {
+        String content = MessageFormat.format("""
+                ⚠️ **Leaderboard Update: Snapshot Capture Failed**
+                
+                **Cause:** Critical failure during Redis Lua script execution (Capture phase).
+                **Status:** Potential data fragmentation or timeout. **Leaderboard RENAME might be incomplete.**
+                
+                **Target Key Pattern:** `{0}`
+                **Action Required:** Check Redis for partial `:snapshot` keys and verify system load.
+                **Environment Identifier:** `{1}`
+                """, pattern, onsquadProperties.getIdentifier()).translateEscapes();
+
+        return DiscordMessage.builder()
+                .username(NOTIFICATION_PROVIDER_NAME)
+                .avatarUrl(NOTIFICATION_AVATAR_URL)
+                .threadName(String.format("[%s] Snapshot Capture Critical Failure (Instance: %s)", LocalDate.now(), onsquadProperties.getIdentifier()))
+                .content(content)
+                .embeds(buildCaptureFailEmbeds(pattern))
+                .build();
+    }
+
+    private List<Embed> buildCaptureFailEmbeds(String pattern) {
+        String title = "Critical: Redis Snapshot Process Aborted";
+        String description = MessageFormat.format("""
+                The system failed to rename current leaderboards to snapshots.
+                **Some leaderboards might still be in the previous week's state.**
+                
+                Please use `SCAN 0 MATCH {0}*` in Redis to identify the current state.
+                Check logs for `RedisException` or `TimeoutException`.
+                """, pattern).translateEscapes();
+
+        return List.of(Embed.builder()
+                .color(Embed.COLOR_RED)
+                .title(title)
+                .description(description)
+                .thumbnail(new Thumbnail(SERVICE_ICON_URL))
+                .footer(new Footer(SERVICE_NAME, SERVICE_ICON_URL))
+                .build());
+    }
+
     private DiscordMessage createDiscordMessage(List<String> snapshotKeys) {
         String content = MessageFormat.format("""
-                ⚠️ **Leaderboard Refresh: Process Failed**
+                ⚠️ **Leaderboard Update: Process Failed**
                 
                 **Cause:** An unexpected error occurred during the scheduled leaderboard update.
                 **Action Required:** Manual ranking synchronization or system status check (Redis/DB) is required.

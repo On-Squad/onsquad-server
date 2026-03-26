@@ -1,6 +1,8 @@
 package revi1337.onsquad.crew_member.application.scheduler;
 
+import io.lettuce.core.RedisException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,23 +32,34 @@ public class CrewLeaderboardUpdateScheduler {
     public void updateLeaderboards() {
         redisLockExecutor.executeIfAcquired(LOCK_KEY, Duration.ofMinutes(5), () -> {
             log.info("[Leaderboard-Scheduler] Job initiated. Fetching candidates from Redis...");
-            List<String> snapshotKeys;
-            try {
-                snapshotKeys = leaderboardSnapshotManager.captureSnapshots();
-            } catch (Exception e) {
-                log.error("[Leaderboard-Scheduler] Snapshot capture failed. Job aborted.", e);
+            List<String> snapshotKeys = captureSnapshotsViaRename();
+            if (snapshotKeys.isEmpty()) {
                 return;
             }
-            List<Long> relatedCrewIds = CrewLeaderboardKeyMapper.parseCrewIdFromKeys(snapshotKeys);
-            try {
-                CrewLeaderboards snapshots = leaderboardSnapshotManager.getSnapshots(relatedCrewIds, CrewLeaderboardManager.RANKING_OVER_FETCH_SIZE);
-                leaderboardUpdateService.updateLeaderboards(snapshots);
-                leaderboardSnapshotManager.clearSnapshots(snapshotKeys);
-                log.info("[Leaderboard-Scheduler] Job completed. Leaderboard has been refreshed and Redis cleared.");
-            } catch (Exception e) {
-                log.error("[Leaderboard-Scheduler] Job failed. Target Crew IDs: {}. Snapshots are preserved in Redis.", relatedCrewIds, e);
-                notificationProvider.sendLeaderboardUpdateFailAlert(snapshotKeys);
-            }
+            processSnapshots(snapshotKeys);
         });
+    }
+
+    private List<String> captureSnapshotsViaRename() {
+        try {
+            return leaderboardSnapshotManager.captureSnapshots();
+        } catch (RedisException exception) {
+            log.error("[Leaderboard-Scheduler] Critical: Snapshot capture failed. Job aborted to prevent data corruption.", exception);
+            notificationProvider.sendSnapshotCaptureFailAlert(CrewLeaderboardKeyMapper.getLeaderboardPattern());
+            return Collections.emptyList();
+        }
+    }
+
+    private void processSnapshots(List<String> snapshotKeys) {
+        List<Long> relatedCrewIds = CrewLeaderboardKeyMapper.parseCrewIdFromKeys(snapshotKeys);
+        try {
+            CrewLeaderboards snapshots = leaderboardSnapshotManager.getSnapshots(relatedCrewIds, CrewLeaderboardManager.RANKING_OVER_FETCH_SIZE);
+            leaderboardUpdateService.updateLeaderboards(snapshots);
+            leaderboardSnapshotManager.clearSnapshots(snapshotKeys);
+            log.info("[Leaderboard-Scheduler] Job completed successfully. Snapshot cleared.");
+        } catch (Exception e) {
+            log.error("[Leaderboard-Scheduler] Job failed during RDB update. Target Crew IDs: {}. Snapshots are preserved.", relatedCrewIds, e);
+            notificationProvider.sendLeaderboardUpdateFailAlert(snapshotKeys);
+        }
     }
 }
