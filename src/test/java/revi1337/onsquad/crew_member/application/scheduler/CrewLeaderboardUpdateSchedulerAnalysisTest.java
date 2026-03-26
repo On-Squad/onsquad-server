@@ -138,6 +138,11 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
         @Test
         @DisplayName("운영 중인 테이블에 대규모 데이터(10만개)를 직접 갱신(쓰기)할 떄의 성능 측정")
         void success1() {
+            // selectRankers: 760ms
+            // selectRankers_1: 1007ms
+            // selectRankers_2: 1433ms
+            // selectRankers_3: 596ms
+            // selectRankers_4: 1049ms
             int memberCount = 100;
             int crewCount = 1000;
             List<Member> members = setupInitialMembers(memberCount);
@@ -162,6 +167,11 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
         @Test
         @DisplayName("운영 중인 테이블에 대규모 데이터(100만개)를 직접 갱신(쓰기)할 떄의 성능 측정")
         void success2() {
+            // selectRankers: PacketTooBigException
+            // selectRankers_1: (3479ms, 3537ms, 4543ms)
+            // selectRankers_2: (2084ms, 2074ms, 2820ms)
+            // selectRankers_3: 6626ms
+            // selectRankers_4: 7282ms <-...?
             int memberCount = 100;
             int crewCount = 10_000;
             List<Member> members = setupInitialMembers(memberCount);
