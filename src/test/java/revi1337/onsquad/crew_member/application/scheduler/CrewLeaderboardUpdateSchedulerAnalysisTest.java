@@ -136,9 +136,40 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
     class performance {
 
         @Test
-        @DisplayName("운영 중인 테이블에 대규모 데이터(10만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [741ms]")
-        void success1() {
+        @DisplayName("[테스트 데이터 1_000] 리더보드 대량 갱신 성능 측정 [크루: 10개 | 각 크루당 100명 ⮕ 상위 50명 추출 | 실제 타겟: 500명]")
+        void success10() {
             // given
+            // CrewLeaderboardUpdateService(Dynamic Strategy): 67ms, 66ms, 55ms, 58ms
+            // CrewLeaderboardUpdateService(CompletionService + toList + subList): 59ms, 69ms, 63ms, 53ms
+            // CrewLeaderboardUpdateService(CompletionService + Iterator): 53ms, 85ms, 62ms, 68ms
+            int memberCount = 100;
+            int crewCount = 10;
+            List<Member> members = setupInitialMembers(memberCount);
+            List<Crew> crews = setupInitialCrews(crewCount, members);
+            setupInitialCrewMembers(crews, members);
+            setupPreviousWeekRankers(crewCount, members);
+            setupMassiveLeaderboardData(crewCount, members);
+
+            // when
+            long totalTime = stopWatch(() -> leaderboardRefreshScheduler.updateLeaderboards());
+
+            // then
+            assertSoftly(softly -> {
+                System.out.println("totalTime: " + totalTime + "ms");
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM crew_ranker", Integer.class))
+                        .isEqualTo(5 * crewCount);
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT score FROM crew_ranker LIMIT 1", Long.class))
+                        .isEqualTo(CrewActivity.CREW_PARTICIPANT.getScore());
+            });
+        }
+
+        @Test
+        @DisplayName("[테스트 데이터 100_000] 리더보드 대량 갱신 성능 측정 [크루: 1,000개 | 각 크루당 100명 ⮕ 상위 50명 추출 | 실제 타겟: 50,000명]")
+        void success1_000() {
+            // given
+            // CrewLeaderboardUpdateService(Dynamic Strategy): 568ms, 778ms, 534ms, 685ms, 477ms
+            // CrewLeaderboardUpdateService(CompletionService + toList + subList): 339ms, 336ms, 340ms, 317ms
+            // CrewLeaderboardUpdateService(CompletionService + Iterator): 334ms, 456ms, 504ms, 359ms
             int memberCount = 100;
             int crewCount = 1000;
             List<Member> members = setupInitialMembers(memberCount);
@@ -161,9 +192,12 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
         }
 
         @Test
-        @DisplayName("운영 중인 테이블에 대규모 데이터(50만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [1960ms]")
-        void success2() {
+        @DisplayName("[테스트 데이터 500_000] 리더보드 대량 갱신 성능 측정 [크루: 5,000개 | 각 크루당 100명 ⮕ 상위 50명 추출 | 실제 타겟: 250,000명]")
+        void success5_000() {
             // given
+            // CrewLeaderboardUpdateService(Dynamic Strategy): 1501ms, 965ms, 941ms, 1448ms
+            // CrewLeaderboardUpdateService(CompletionService + toList + subList): 1358ms, 1351ms, 919ms, 1361ms
+            // CrewLeaderboardUpdateService(CompletionService + Iterator): 1314ms, 1309ms, 1350ms, 1263ms
             int memberCount = 100;
             int crewCount = 5000;
             List<Member> members = setupInitialMembers(memberCount);
@@ -186,15 +220,46 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
         }
 
         @Test
-        @DisplayName("운영 중인 테이블에 대규모 데이터(100만개)를 직접 갱신(쓰기)할 떄의 성능 측정 [3751ms]")
-        void success3() {
+        @DisplayName("[테스트 데이터 1_000_000] 리더보드 대량 갱신 성능 측정 [크루: 10,000개 | 각 크루당 100명 ⮕ 상위 50명 추출 | 실제 타겟: 500_000명]")
+        void success10_000() {
             // given
+            // CrewLeaderboardUpdateService(Dynamic Strategy): 2018ms, 1942ms, 1911ms
+            // CrewLeaderboardUpdateService(CompletionService + toList + subList): 1941ms, 1990ms, 2248ms
+            // CrewLeaderboardUpdateService(CompletionService + Iterator): 1925ms, 1787ms, 1980ms
             int memberCount = 100;
             int crewCount = 10_000;
             List<Member> members = setupInitialMembers(memberCount);
             List<Crew> crews = setupInitialCrews(crewCount, members);
             setupInitialCrewMembers(crews, members);
             setupPreviousWeekRankers(crewCount, members);
+            setupMassiveLeaderboardData(crewCount, members);
+
+            // when
+            long totalTime = stopWatch(() -> leaderboardRefreshScheduler.updateLeaderboards());
+
+            // then
+            assertSoftly(softly -> {
+                System.out.println("totalTime: " + totalTime + "ms");
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM crew_ranker", Integer.class))
+                        .isEqualTo(5 * crewCount);
+                softly.assertThat(jdbcTemplate.queryForObject("SELECT score FROM crew_ranker LIMIT 1", Long.class))
+                        .isEqualTo(CrewActivity.CREW_PARTICIPANT.getScore());
+            });
+        }
+
+        @Test
+        @DisplayName("[테스트 데이터 2_000_000] 리더보드 대량 갱신 성능 측정 [크루: 20,000개 | 각 크루당 100명 ⮕ 상위 50명 추출 | 실제 타겟: 1_000_000명]")
+        void success20_000() {
+            // given
+            // CrewLeaderboardUpdateService(Dynamic Strategy): 4807ms
+            // CrewLeaderboardUpdateService(CompletionService + toList + subList): 5981ms
+            // CrewLeaderboardUpdateService(CompletionService + Iterator): 4471ms
+            int memberCount = 100;
+            int crewCount = 20_000;
+            List<Member> members = setupInitialMembers(memberCount);
+            List<Crew> crews = setupInitialCrews(crewCount, members);
+            setupInitialCrewMembersChunk(crews, members);
+            setupPreviousWeekRankersChunk(crewCount, members);
             setupMassiveLeaderboardData(crewCount, members);
 
             // when
@@ -273,6 +338,50 @@ class CrewLeaderboardUpdateSchedulerAnalysisTest {
             }
         }
         crewRankerRepository.insertBatch(rankerCandidates);
+    }
+
+    private void setupInitialCrewMembersChunk(List<Crew> crews, List<Member> members) {
+        List<CrewMember> crewMembers = crews.stream()
+                .flatMap(crew -> IntStream.range(1, members.size()).mapToObj(seq -> createGeneralCrewMember(crew, members.get(seq))))
+                .toList();
+
+        LocalDateTime now = LocalDateTime.now();
+        String sql = "INSERT INTO crew_member(crew_id, member_id, role, participate_at) VALUES (?, ?, ?, ?)";
+
+        int totalSize = crewMembers.size();
+        int chunkSize = 100_000;
+        for (int i = 0; i < totalSize; i += chunkSize) {
+            List<CrewMember> subList = crewMembers.subList(i, Math.min(i + chunkSize, totalSize));
+            jdbcTemplate.batchUpdate(
+                    sql,
+                    subList,
+                    subList.size(),
+                    (ps, crewMember) -> {
+                        ps.setLong(1, crewMember.getCrew().getId());
+                        ps.setLong(2, crewMember.getMember().getId());
+                        ps.setObject(3, CrewRole.GENERAL.name());
+                        ps.setObject(4, now);
+                    }
+            );
+        }
+    }
+
+    private void setupPreviousWeekRankersChunk(int crewCount, List<Member> members) {
+        List<CrewRankerCandidate> rankerCandidates = new ArrayList<>();
+        for (long crewId = 1L; crewId <= crewCount; crewId++) {
+            int rank = 1;
+            int score = 10000;
+            for (Member member : members) {
+                rankerCandidates.add(createCrewRankerCandidate(crewId, rank++, score--, member));
+            }
+        }
+
+        int totalSize = rankerCandidates.size();
+        int chunkSize = 100_000;
+        for (int i = 0; i < totalSize; i += chunkSize) {
+            List<CrewRankerCandidate> subList = rankerCandidates.subList(i, Math.min(i + chunkSize, totalSize));
+            crewRankerRepository.insertBatch(subList);
+        }
     }
 
     private void setupMassiveLeaderboardData(int crewCount, List<Member> members) {
