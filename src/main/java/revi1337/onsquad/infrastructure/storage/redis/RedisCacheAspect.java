@@ -1,6 +1,5 @@
 package revi1337.onsquad.infrastructure.storage.redis;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
@@ -17,6 +16,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.constant.CacheConst.CacheFormat;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
 @Aspect
@@ -60,22 +60,14 @@ public class RedisCacheAspect {
     }
 
     private String serializeData(Object data) {
-        try {
-            return objectMapper.writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Serialization error", e);
-        }
+        return ObjectMapperUtils.serializeToString(objectMapper, data);
     }
 
     private Object deserializeCachedData(String cachedData, ProceedingJoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        JavaType javaType = objectMapper.getTypeFactory()
-                .constructType(methodSignature.getMethod().getGenericReturnType());
-        try {
-            return objectMapper.readValue(cachedData, javaType);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Deserialization error", e);
-        }
+        JavaType javaType = ObjectMapperUtils.constructGenericType(objectMapper, methodSignature.getMethod());
+
+        return ObjectMapperUtils.deserialize(objectMapper, cachedData, javaType);
     }
 
     private boolean shouldCache(RedisCache redisCache, Object result) {

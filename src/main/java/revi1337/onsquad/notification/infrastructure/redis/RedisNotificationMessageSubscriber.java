@@ -1,12 +1,12 @@
 package revi1337.onsquad.notification.infrastructure.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 import revi1337.onsquad.notification.domain.model.NotificationMessage;
 import revi1337.onsquad.notification.infrastructure.sse.SseEmitterManager;
 
@@ -23,12 +23,8 @@ public class RedisNotificationMessageSubscriber implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        try {
-            String receiverId = new String(message.getChannel()).replaceFirst(CHANNEL_PREFIX, EMPTY_SIGN);
-            NotificationMessage notificationMessage = defaultObjectMapper.readValue(new String(message.getBody()), NotificationMessage.class);
-            sseEmitterManager.send(receiverId, notificationMessage);
-        } catch (IOException e) {
-            log.error("Failed to handle redis notification", e);
-        }
+        String receiverId = new String(message.getChannel()).replaceFirst(CHANNEL_PREFIX, EMPTY_SIGN);
+        NotificationMessage notificationMsg = ObjectMapperUtils.deserialize(defaultObjectMapper, new String(message.getBody()), NotificationMessage.class);
+        sseEmitterManager.send(receiverId, notificationMsg);
     }
 }

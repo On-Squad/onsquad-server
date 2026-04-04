@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 import revi1337.onsquad.notification.domain.Notification;
 import revi1337.onsquad.notification.domain.entity.NotificationEntity;
 import revi1337.onsquad.notification.domain.model.NotificationMessage;
@@ -42,19 +43,6 @@ public class NotificationMessageMapper {
     }
 
     private JsonNode toJsonNode(Object payload) {
-        if (payload == null) {
-            return objectMapper.createObjectNode();
-        }
-        if (payload instanceof JsonNode jsonNode) {
-            return jsonNode;
-        }
-        if (payload instanceof String json) {
-            try {
-                return objectMapper.readTree(json);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Invalid JSON payload string", e);
-            }
-        }
-        return objectMapper.valueToTree(payload);
+        return ObjectMapperUtils.toJsonNode(objectMapper, payload);
     }
 }

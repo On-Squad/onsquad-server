@@ -56,7 +56,7 @@ class LeaderboardRefreshFailNotificationProviderTest {
 
             DiscordMessage sentMessage = messageCaptor.getValue();
             softly.assertThat(sentMessage.getUsername()).isEqualTo("OnSquad Crew Leaderboard Update Scheduler");
-            softly.assertThat(sentMessage.getContent()).contains("Leaderboard Refresh: Process Failed");
+            softly.assertThat(sentMessage.getContent()).contains("Leaderboard Update: Process Failed");
             softly.assertThat(sentMessage.getContent()).contains("Total Failed Snapshots");
             softly.assertThat(sentMessage.getContent()).contains("`2` keys");
             softly.assertThat(sentMessage.getContent()).contains("Environment Identifier");

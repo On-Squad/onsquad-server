@@ -2,7 +2,6 @@ package revi1337.onsquad.auth.token.infrastructure.persistence.initializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 import revi1337.onsquad.auth.token.domain.model.RefreshToken;
 import revi1337.onsquad.auth.token.domain.model.RefreshTokens;
 import revi1337.onsquad.auth.token.infrastructure.persistence.ExpiringMapRefreshTokenStorage;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 
 @Slf4j
 @Profile({"default", "local"})
@@ -65,11 +65,11 @@ public class RefreshTokenReloader {
 
     private void restoreRefreshTokens(File backupFile, Instant now) {
         try {
-            RefreshTokens refreshTokens = objectMapper.readValue(backupFile, RefreshTokens.class);
+            RefreshTokens refreshTokens = ObjectMapperUtils.deserializeFromFile(objectMapper, backupFile, RefreshTokens.class);
             List<RefreshToken> availableRefreshTokens = refreshTokens.extractAvailableBefore(now);
 
             restoreInternal(availableRefreshTokens, now);
-        } catch (IOException exception) {
+        } catch (RuntimeException exception) {
             log.error(RESTORE_ERROR_LOG, exception);
         }
     }
@@ -87,9 +87,9 @@ public class RefreshTokenReloader {
 
     private void backupRefreshTokens(File backupFile, RefreshTokens refreshTokens) {
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(backupFile, refreshTokens);
+            ObjectMapperUtils.serializeToFileAsPretty(objectMapper, backupFile, refreshTokens);
             log.info(WRITING_LOG);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             log.error(WRITING_ERROR_LOG, e);
         }
     }

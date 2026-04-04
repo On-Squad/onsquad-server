@@ -1,6 +1,5 @@
 package revi1337.onsquad.infrastructure.aws.s3.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -9,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.config.system.properties.OnsquadProperties;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 import revi1337.onsquad.infrastructure.aws.s3.cleanup.S3CleanupProcessor;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage.Embed;
@@ -33,9 +33,9 @@ public class S3FailNotificationProvider {
     public void sendExceedRetryAlert(List<String> paths) {
         DiscordMessage message = createDiscordMessage(paths);
         try {
-            byte[] fileBytes = defaultObjectMapper.writeValueAsBytes(new RetryExceedJson(paths));
+            byte[] fileBytes = ObjectMapperUtils.serializeToBytes(defaultObjectMapper, new RetryExceedJson(paths));
             s3DiscordNotificationClient.sendNotification(message, "exceed_file_paths.json", fileBytes);
-        } catch (JsonProcessingException e) {
+        } catch (RuntimeException e) {
             log.error("Failed to serialize S3 exceed retry paths. Object count: {}, Error: {}", paths.size(), e.getMessage(), e);
             s3DiscordNotificationClient.sendNotification(message);
         }

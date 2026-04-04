@@ -1,6 +1,5 @@
 package revi1337.onsquad.crew_member.infrastructure.discord;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -9,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import revi1337.onsquad.common.config.system.properties.OnsquadProperties;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage.Embed;
 import revi1337.onsquad.infrastructure.network.discord.DiscordMessage.Embed.Footer;
@@ -37,9 +37,9 @@ public class LeaderboardRefreshFailNotificationProvider {
     public void sendLeaderboardUpdateFailAlert(List<String> snapshotKeys) {
         DiscordMessage message = createDiscordMessage(snapshotKeys);
         try {
-            byte[] fileBytes = defaultObjectMapper.writeValueAsBytes(new FailedSnapshotKeysJson(snapshotKeys));
+            byte[] fileBytes = ObjectMapperUtils.serializeToBytes(defaultObjectMapper, new FailedSnapshotKeysJson(snapshotKeys));
             leaderboardDiscordNotificationClient.sendNotification(message, "failed_snapshot_keys.json", fileBytes);
-        } catch (JsonProcessingException e) {
+        } catch (RuntimeException e) {
             log.error("[Leaderboard-Notification] Failed to serialize snapshot keys. Key count: {}, Error: {}", snapshotKeys.size(), e.getMessage(), e);
             leaderboardDiscordNotificationClient.sendNotification(message);
         }

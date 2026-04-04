@@ -15,6 +15,7 @@ import revi1337.onsquad.auth.support.CurrentMember;
 import revi1337.onsquad.auth.token.application.JsonWebTokenManager;
 import revi1337.onsquad.auth.token.domain.model.JsonWebToken;
 import revi1337.onsquad.common.dto.RestResponse;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,8 +40,7 @@ public class JsonWebTokenSuccessHandler implements AuthenticationSuccessHandler 
     private void sendTokenResponseToClient(HttpServletResponse response, JsonWebToken jsonWebToken) {
         try {
             response.setContentType(APPLICATION_JSON_VALUE);
-            response.getWriter()
-                    .write(objectMapper.writeValueAsString(RestResponse.success(jsonWebToken)));
+            response.getWriter().write(ObjectMapperUtils.serializeToString(objectMapper, RestResponse.success(jsonWebToken)));
 
         } catch (IOException e) {
             log.error(SERIALIZE_IO_ERROR_LOG_FORMAT, e);

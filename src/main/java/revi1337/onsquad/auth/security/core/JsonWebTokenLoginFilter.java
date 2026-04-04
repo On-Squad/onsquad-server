@@ -26,6 +26,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import revi1337.onsquad.auth.security.error.UnsupportedLoginUrlMethod;
 import revi1337.onsquad.common.error.CommonErrorCode;
+import revi1337.onsquad.common.util.ObjectMapperUtils;
 
 public class JsonWebTokenLoginFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -75,11 +76,10 @@ public class JsonWebTokenLoginFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             final String jsonString = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
-            final LoginRequest loginRequest = objectMapper.readValue(jsonString, LoginRequest.class);
+            final LoginRequest loginRequest = ObjectMapperUtils.deserialize(objectMapper, jsonString, LoginRequest.class);
             if (!isValidOrHandleError(loginRequest, request, response)) {
                 return null;
             }
@@ -93,8 +93,7 @@ public class JsonWebTokenLoginFilter extends AbstractAuthenticationProcessingFil
         }
     }
 
-    private boolean isValidOrHandleError(LoginRequest loginReq, HttpServletRequest request,
-                                         HttpServletResponse response) {
+    private boolean isValidOrHandleError(LoginRequest loginReq, HttpServletRequest request, HttpServletResponse response) {
         Set<ConstraintViolation<LoginRequest>> violations = validator.validate(loginReq);
         if (violations.isEmpty()) {
             return true;
