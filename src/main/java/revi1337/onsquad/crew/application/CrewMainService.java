@@ -25,6 +25,7 @@ import revi1337.onsquad.squad_category.domain.model.SquadCategories;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CrewMainService {
 
     private final CrewAccessor crewAccessor;
@@ -35,18 +36,16 @@ public class CrewMainService {
     private final SquadCategoryAccessor squadCategoryAccessor;
 
     public CrewMainResponse fetchMain(Long memberId, Long crewId, Pageable pageable) {
-        CrewMember me = crewMemberAccessor.getByMemberIdAndCrewId(memberId, crewId);
-        CrewDetail crew = crewAccessor.getCrewWithDetailById(crewId);
         List<AnnounceResponse> announces = announceCacheService.getDefaultAnnounces(crewId);
         List<CrewRankerResponse> rankers = crewRankerCacheService.findAllByCrewId(crewId);
+
+        CrewMember me = crewMemberAccessor.getByMemberIdAndCrewId(memberId, crewId);
+        CrewDetail crew = crewAccessor.getCrewWithDetailById(crewId);
         SquadLinkableGroup<SquadDetail> squadGroup = getSquads(crewId, pageable);
 
-        boolean canManage = CrewPolicy.canManage(me);
-
-        return CrewMainResponse.from(canManage, crew, announces, rankers, squadGroup.results());
+        return CrewMainResponse.from(CrewPolicy.canManage(me), crew, announces, rankers, squadGroup.results());
     }
 
-    @Transactional(readOnly = true)
     public CrewManageResponse fetchManageInfo(Long memberId, Long crewId) {
         CrewMember me = crewMemberAccessor.getByMemberIdAndCrewId(memberId, crewId);
         CrewPolicy.ensureManageable(me);
