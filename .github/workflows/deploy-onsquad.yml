@@ -89,5 +89,5 @@ jobs:
                 fi
                 kill -9 $PROCESS_ID
             fi
-            nohup java --enable-preview -jar -Duser.timezone=Asia/Seoul -Dspring.profiles.active=${{ secrets.SPRING_PROFILE }} $EXECUTABLE_SPRING_JAR_PATH > $SOURCE_DIR/output.log 2>&1 &
+            nohup java --enable-preview -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SOURCE_DIR/heapdump.hprof -jar -Duser.timezone=Asia/Seoul -Dspring.profiles.active=${{ secrets.SPRING_PROFILE }} $EXECUTABLE_SPRING_JAR_PATH > $SOURCE_DIR/output.log 2>&1 &
             sleep 1
