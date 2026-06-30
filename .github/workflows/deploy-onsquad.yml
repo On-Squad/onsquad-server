@@ -60,8 +60,8 @@ jobs:
           host: ${{ secrets.HOST }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            BACKUP_DIR=$(echo $HOME)/${{ env.PROJECT_NAME }}/backup
-            BACKUP_TMP_DIR='tmp/backup'
+            SOURCE_DIR=$(echo $HOME)/${{ env.PROJECT_NAME }}
+            BACKUP_DIR=$SOURCE_DIR/backup
             if [[ ! -d $BACKUP_DIR ]]; then
                 mkdir -p $BACKUP_DIR
             fi
@@ -71,23 +71,5 @@ jobs:
             if [[ ! -f $BACKUP_DIR/verification_backup.json ]]; then
                 echo '{"snapshots":[]}' > $BACKUP_DIR/verification_backup.json
             fi
-            
-            SOURCE_DIR=$(echo $HOME)/${{ env.PROJECT_NAME }}
-            EXECUTABLE_SPRING_JAR_PATH=$(find $SOURCE_DIR -name '*.jar' 2>/dev/null)
-            PROCESS_ID=$(ps aux | grep -E 'java .* -jar' | grep -v grep | tr ' ' '\n' | sed -e '/^$/d' | head -2 | tail -1)
-            if [[ -z $PROCESS_ID ]]; then
-                echo 'Nothing Process Running'
-                if [[ -d $BACKUP_TMP_DIR ]]; then
-                    cp -R $BACKUP_TMP_DIR/* $BACKUP_DIR
-                    rm -rf $BACKUP_TMP_DIR
-                fi
-            else
-                echo 'Another Process Running'
-                if [[ -d $BACKUP_DIR ]]; then
-                    mkdir -p "$BACKUP_TMP_DIR"
-                    cp -R $BACKUP_DIR/* $BACKUP_TMP_DIR
-                fi
-                kill -9 $PROCESS_ID
-            fi
-            nohup java --enable-preview -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SOURCE_DIR/heapdump.hprof -jar -Duser.timezone=Asia/Seoul -Dspring.profiles.active=${{ secrets.SPRING_PROFILE }} $EXECUTABLE_SPRING_JAR_PATH > $SOURCE_DIR/output.log 2>&1 &
-            sleep 1
+            echo "SPRING_PROFILE=${{ secrets.SPRING_PROFILE }}" > $SOURCE_DIR/.env
+            sudo systemctl restart onsquad
