@@ -72,4 +72,5 @@ jobs:
                 echo '{"snapshots":[]}' > $BACKUP_DIR/verification_backup.json
             fi
             echo "SPRING_PROFILE=${{ secrets.SPRING_PROFILE }}" > $SOURCE_DIR/.env
+            echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> $SOURCE_DIR/.env
             sudo systemctl restart onsquad
