@@ -71,6 +71,11 @@ jobs:
             if [[ ! -f $BACKUP_DIR/verification_backup.json ]]; then
                 echo '{"snapshots":[]}' > $BACKUP_DIR/verification_backup.json
             fi
+            
             echo "SPRING_PROFILE=${{ secrets.SPRING_PROFILE }}" > $SOURCE_DIR/.env
             echo "DISCORD_WEBHOOK_URL=${{ secrets.DISCORD_WEBHOOK_URL }}" >> $SOURCE_DIR/.env
+            
+            source $SOURCE_DIR/.env
+            curl -s -H "Content-Type: application/json" -d '{"content": "배포가 완료되었습니다. 서버를 재시작합니다."}' $DISCORD_WEBHOOK_URL
+
             sudo systemctl restart onsquad
